@@ -16,9 +16,6 @@ public class Provider {
     @Column(name = "NAME")
     private String name;
 
-    @OneToMany
-    private List<Employee> employees = new ArrayList<Employee>();
-
     @Column(name = "ADDRESS")
     private String address;
 
@@ -31,14 +28,17 @@ public class Provider {
     @Column(name = "NOTE")
     private String note;
 
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private List<Employee> employees = new ArrayList<Employee>();
+
+    @OneToMany
+    private List<Document> documents = new ArrayList<Document>();
+
     @ManyToMany
     private List<Tag> tags = new ArrayList<Tag>();
 
     @ManyToMany
     private List<Product> products = new ArrayList<Product>();
-
-    @OneToMany
-    private List<Document> documents = new ArrayList<Document>();
 
     public void addDocument(Document document) {
         documents.add(document);

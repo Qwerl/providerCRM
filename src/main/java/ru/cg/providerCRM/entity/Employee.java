@@ -26,6 +26,14 @@ public class Employee {
     @Column(name = "POSITION")
     private String position;
 
+    @ManyToOne
+    @JoinColumn(name = "PROVIDER_ID")
+    private Provider provider;
+
+    @ManyToOne
+    @JoinColumn(name = "PRODUCER_ID")
+    private Producer producer;
+
     public Long getId() {
         return id;
     }
@@ -74,6 +82,22 @@ public class Employee {
         this.position = position;
     }
 
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public Producer getProducer() {
+        return producer;
+    }
+
+    public void setProducer(Producer producer) {
+        this.producer = producer;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,10 +107,12 @@ public class Employee {
 
         if (!id.equals(employee.id)) return false;
         if (!fullName.equals(employee.fullName)) return false;
-        if (email != null ? !email.equals(employee.email) : employee.email != null) return false;
-        if (homePhoneNumber != null ? !homePhoneNumber.equals(employee.homePhoneNumber) : employee.homePhoneNumber != null)
-            return false;
-        return !(workPhoneNumber != null ? !workPhoneNumber.equals(employee.workPhoneNumber) : employee.workPhoneNumber != null);
+        if (!email.equals(employee.email)) return false;
+        if (!homePhoneNumber.equals(employee.homePhoneNumber)) return false;
+        if (!workPhoneNumber.equals(employee.workPhoneNumber)) return false;
+        if (!position.equals(employee.position)) return false;
+        if (provider != null ? !provider.equals(employee.provider) : employee.provider != null) return false;
+        return !(producer != null ? !producer.equals(employee.producer) : employee.producer != null);
 
     }
 
@@ -94,9 +120,12 @@ public class Employee {
     public int hashCode() {
         int result = id.hashCode();
         result = 31 * result + fullName.hashCode();
-        result = 31 * result + (email != null ? email.hashCode() : 0);
-        result = 31 * result + (homePhoneNumber != null ? homePhoneNumber.hashCode() : 0);
-        result = 31 * result + (workPhoneNumber != null ? workPhoneNumber.hashCode() : 0);
+        result = 31 * result + email.hashCode();
+        result = 31 * result + homePhoneNumber.hashCode();
+        result = 31 * result + workPhoneNumber.hashCode();
+        result = 31 * result + position.hashCode();
+        result = 31 * result + (provider != null ? provider.hashCode() : 0);
+        result = 31 * result + (producer != null ? producer.hashCode() : 0);
         return result;
     }
 

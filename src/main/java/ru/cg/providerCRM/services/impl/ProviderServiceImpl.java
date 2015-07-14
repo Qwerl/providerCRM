@@ -60,9 +60,9 @@ public class ProviderServiceImpl implements ProviderService {
         providerRepository.saveAndFlush(provider);
     }
 
-    public void deleteEmployee(Employee employeeToDelete, Long providerId) {
+    public void deleteEmployee(Long employeeId, Long providerId) {
         Provider provider = providerRepository.findOne(providerId);
-        Employee employee = employeeRepository.findByFullName(employeeToDelete.getFullName());
+        Employee employee = employeeRepository.findOne(employeeId);
         provider.removeEmployee(employee);
         providerRepository.saveAndFlush(provider);
     }
