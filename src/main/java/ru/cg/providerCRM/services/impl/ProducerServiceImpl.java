@@ -49,10 +49,7 @@ public class ProducerServiceImpl implements ProducerService {
 
     public void addEmployee(Employee newEmployee, Long producerId) {
         Producer producer = producerRepository.findOne(producerId);
-
-        employeeRepository.saveAndFlush(newEmployee);
-        Employee employee = employeeRepository.findByFullName(newEmployee.getFullName());
-
+        Employee employee = employeeRepository.saveAndFlush(newEmployee);
         producer.addEmployee(employee);
         producerRepository.saveAndFlush(producer);
     }
@@ -70,9 +67,9 @@ public class ProducerServiceImpl implements ProducerService {
     }
 
 
-    public void deleteEmployee(Employee employeeToDelete, Long producerId) {
+    public void deleteEmployee(Long employeeId, Long producerId) {
         Producer producer = producerRepository.findOne(producerId);
-        Employee employee = employeeRepository.findByFullName(employeeToDelete.getFullName());
+        Employee employee = employeeRepository.findOne(employeeId);
         producer.removeEmployee(employee);
         producerRepository.saveAndFlush(producer);
     }

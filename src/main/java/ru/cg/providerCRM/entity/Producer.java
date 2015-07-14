@@ -25,7 +25,7 @@ public class Producer {
     @Column(name = "NOTE")
     private String note;
 
-    @OneToMany
+    @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<Employee> employees = new ArrayList<Employee>();
 
     @ManyToMany

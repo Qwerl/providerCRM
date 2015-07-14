@@ -13,6 +13,6 @@ public interface ProviderService {
     List<Product> getAllProductsByProviderName(String providerName);
     List<Provider> getProvidersContainsTag(Tag tag);
     void addEmployee(Employee employee, Long providerId);
-    void deleteEmployee(Employee employee, Long providerId);
+    void deleteEmployee(Long employeeId, Long providerId);
     void addDocument(Document document, Long providerId);
 }

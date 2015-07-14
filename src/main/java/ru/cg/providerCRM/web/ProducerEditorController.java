@@ -131,8 +131,9 @@ public class ProducerEditorController {
         employee.setEmail(email);
         employee.setWorkPhoneNumber(workPhoneNumber);
         employee.setHomePhoneNumber(homePhoneNumber);
+        employee.setProducer(producerService.getById(Long.parseLong(producerId)));
+        employeeService.addEmployee(employee);
 
-        producerService.addEmployee(employee, Long.parseLong(producerId));
         return new ModelAndView("redirect:/producer/" + producerId);
     }
 
@@ -156,8 +157,7 @@ public class ProducerEditorController {
     @RequestMapping(value = "/producer/{producerId:.+}/edit/employee/{employeeId}/delete", method = RequestMethod.POST)
     public ModelAndView deleteEmployee(@PathVariable("producerId") String producerId,
                                        @PathVariable("employeeId") String employeeId) {
-        Employee employee = employeeService.getById(Long.parseLong(employeeId));
-        producerService.deleteEmployee(employee, Long.parseLong(producerId));
+        producerService.deleteEmployee(Long.parseLong(employeeId), Long.parseLong(producerId));
         return new ModelAndView("redirect:/producer/" + producerId + "/edit/employee");
     }
 

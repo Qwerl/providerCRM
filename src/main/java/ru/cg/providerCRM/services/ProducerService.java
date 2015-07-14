@@ -14,5 +14,5 @@ public interface ProducerService {
     List<Provider> getAllProvidersByProducerId(Long producerId);
     void addEmployee(Employee employee, Long producerId);
     List<Producer> getProducersContainsTag(Tag tag);
-    void deleteEmployee(Employee employee, Long producerId);
+    void deleteEmployee(Long employeeId, Long producerId);
 }

@@ -137,8 +137,9 @@ public class ProviderEditorController {
         employee.setEmail(email);
         employee.setWorkPhoneNumber(workPhoneNumber);
         employee.setHomePhoneNumber(homePhoneNumber);
+        employee.setProvider(providerService.getById(Long.parseLong(providerId)));
+        employeeService.addEmployee(employee);
 
-        providerService.addEmployee(employee, Long.parseLong(providerId));
         return new ModelAndView("redirect:/provider/" + providerId);
     }
 
@@ -162,8 +163,7 @@ public class ProviderEditorController {
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId}/delete", method = RequestMethod.POST)
     public ModelAndView deleteEmployee(@PathVariable("providerId") String providerId,
                                        @PathVariable("employeeId") String employeeId) {
-        Employee employee = employeeService.getById(Long.parseLong(employeeId));
-        providerService.deleteEmployee(employee, Long.parseLong(providerId));
+        providerService.deleteEmployee(Long.parseLong(employeeId), Long.parseLong(providerId));
         return new ModelAndView("redirect:/provider/" + providerId + "/edit/employee");
     }
 
