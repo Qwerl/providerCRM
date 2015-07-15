@@ -18,12 +18,12 @@ public class Provider {
     private Long id;
 
     @Column(name = "NAME")
-    @NotBlank(message = "низя")
+    @NotBlank
     @Size(min = 1, max = 255)
     private String name;
 
     @Column(name = "ADDRESS")
-    @NotBlank(message = "низя")
+    @NotBlank
     @Size(min = 1, max = 255)
     private String address;
 

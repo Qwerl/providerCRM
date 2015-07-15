@@ -10,11 +10,12 @@
     <title>Создание нового поставщика</title>
     <spring:url value="/resources/core/css/styles2.css" var="coreCss"/>
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
+    <spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="${coreCss}">
     <link rel="stylesheet" href="${bootstrapCss}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="${bootstrapJs}"></script>
 </head>
 
 <body>
@@ -50,6 +51,7 @@
                 <td><form:textarea rows="5" class="form-control" placeholder="Введите примечания" path="note" required="required"/></td>
                 <td><form:errors path="note" cssClass="error"/></td>
             </tr>
+            <tr>
                 <td>Теги</td>
                 <td><form:checkboxes path="tags" items="${tags}"/></td>
                 <td><form:errors path="tags" cssClass="error"/></td>

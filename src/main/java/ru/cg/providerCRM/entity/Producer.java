@@ -1,5 +1,7 @@
 package ru.cg.providerCRM.entity;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +16,19 @@ public class Producer {
     private Long id;
 
     @Column(name = "NAME")
+    @NotBlank
     private String name;
 
     @Column(name = "ADDRESS")
+    @NotBlank
     private String address;
 
     @Column(name = "PHONE_NUMBER")
+    @NotBlank
     private String phoneNumber;
 
     @Column(name = "NOTE")
+    @NotBlank
     private String note;
 
     @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL,  orphanRemoval = true)
@@ -107,48 +113,17 @@ public class Producer {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Producer producer = (Producer) o;
-
-        if (!id.equals(producer.id)) return false;
-        if (!name.equals(producer.name)) return false;
-        if (!address.equals(producer.address)) return false;
-        if (!phoneNumber.equals(producer.phoneNumber)) return false;
-        if (!note.equals(producer.note)) return false;
-        if (employees != null ? !employees.equals(producer.employees) : producer.employees != null) return false;
-        if (providers != null ? !providers.equals(producer.providers) : producer.providers != null) return false;
-        return !(tags != null ? !tags.equals(producer.tags) : producer.tags != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + address.hashCode();
-        result = 31 * result + phoneNumber.hashCode();
-        result = 31 * result + note.hashCode();
-        result = 31 * result + (employees != null ? employees.hashCode() : 0);
-        result = 31 * result + (providers != null ? providers.hashCode() : 0);
-        result = 31 * result + (tags != null ? tags.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Producer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", note='" + note + '\'' +
                 ", employees=" + employees +
                 ", providers=" + providers +
                 ", tags=" + tags +
                 '}';
     }
-
 
 }

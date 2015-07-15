@@ -4,10 +4,9 @@ import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.Employee;
 import ru.cg.providerCRM.entity.Producer;
@@ -18,6 +17,8 @@ import ru.cg.providerCRM.services.ProducerService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
 
+import javax.validation.Valid;
+import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,31 +39,31 @@ public class ProducerEditorController {
     @Autowired
     private EmployeeService employeeService;
 
+    @InitBinder
+    public void initBinder(WebDataBinder b) {
+        b.registerCustomEditor(Tag.class, new TagEditor());
+    }
+
     @RequestMapping(value = "/producer/add", method = RequestMethod.GET)
-    public ModelAndView newProducerForm() {
+    public ModelAndView displayProducerRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProducer");
         modelAndView.addObject("tags", tagService.getAllTags());
+        modelAndView.addObject("producer", new Producer());
         return modelAndView;
     }
 
     @RequestMapping(value = "/producer/add", method = RequestMethod.POST)
-    public ModelAndView addNewProducer(@RequestParam(value = "name") String name,
-                                       @RequestParam(value = "address") String address,
-                                       @RequestParam(value = "phoneNumber") String phoneNumber,
-                                       @RequestParam(value = "note") String note,
-                                       @RequestParam(value = "tags") List<String> tags) {
-        List<Tag> tagsList = new ArrayList<>();
-        for (String tag : tags) {
-            tagsList.add(tagService.getById(Long.parseLong(tag)));
+    public ModelAndView addNewProducer(@Valid Producer validProducer, BindingResult result) {
+
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = new ModelAndView("addNewProducer");
+            modelAndView.addObject("tags", tagService.getAllTags());
+            return modelAndView;
+        } else {
+            Producer producer = validProducer;
+            producerService.addProducer(producer);
+            return new ModelAndView("redirect:/producer/" + producer.getId());
         }
-        Producer producer = new Producer();
-        producer.setName(name);
-        producer.setAddress(address);
-        producer.setPhoneNumber(phoneNumber);
-        producer.setNote(note);
-        producer.setTags(tagsList);
-        producerService.addProducer(producer);
-        return new ModelAndView("redirect:/producer/" + producer.getId());
     }
 
     @RequestMapping(value = "/producer/{producerId:.+}", method = RequestMethod.GET)
@@ -177,6 +178,22 @@ public class ProducerEditorController {
         employee.setHomePhoneNumber(homePhoneNumber);
         employeeService.updateEmployee(employee);
         return new ModelAndView("redirect:/producer/" + producerId);
+    }
+
+    //todo
+    private class TagEditor extends PropertyEditorSupport {
+
+        @Override
+        public void setAsText(String text) throws IllegalArgumentException {
+            System.out.println(tagService);
+            setValue(tagService.getByName(text));
+        }
+
+        @Override
+        public String getAsText() {
+            return ((Tag) getValue()).getTagText();
+        }
+
     }
 
 }
