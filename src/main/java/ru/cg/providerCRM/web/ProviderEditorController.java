@@ -4,10 +4,9 @@ import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.Employee;
 import ru.cg.providerCRM.entity.Product;
@@ -18,6 +17,8 @@ import ru.cg.providerCRM.services.ProductService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
 
+import javax.validation.Valid;
+import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,33 +39,30 @@ public class ProviderEditorController {
     @Autowired
     public ProductService productService;
 
+    @InitBinder
+    public void initBinder(WebDataBinder b) {
+        b.registerCustomEditor(Tag.class, new TagEditor());
+    }
+
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
-    public ModelAndView newProviderForm() {
+    public ModelAndView displayProviderRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProvider");
         modelAndView.addObject("tags", tagService.getAllTags());
+        modelAndView.addObject("provider", new Provider());
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/add", method = RequestMethod.POST)
-    public ModelAndView addNewProvider(@RequestParam(value = "name") String name,
-                                       @RequestParam(value = "address") String address,
-                                       @RequestParam(value = "storageAddress") String storageAddress,
-                                       @RequestParam(value = "phoneNumber") String phoneNumber,
-                                       @RequestParam(value = "note") String note,
-                                       @RequestParam(value = "tags") List<String> tags) {
-        List<Tag> tagsList = new ArrayList<>();
-        for (String tag : tags) {
-            tagsList.add(tagService.getById(Long.parseLong(tag)));
+    public ModelAndView addNewProvider(@Valid Provider validProvider, BindingResult result) {
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = new ModelAndView("addNewProvider");
+            modelAndView.addObject("tags", tagService.getAllTags());
+            return modelAndView;
+        } else {
+            Provider provider = validProvider;
+            providerService.addProvider(provider);
+            return new ModelAndView("redirect:/provider/" + provider.getId());
         }
-        Provider provider = new Provider();
-        provider.setName(name);
-        provider.setAddress(address);
-        provider.setStorageAddress(storageAddress);
-        provider.setPhoneNumber(phoneNumber);
-        provider.setNote(note);
-        provider.setTags(tagsList);
-        providerService.addProvider(provider);
-        return new ModelAndView("redirect:/provider/" + provider.getId());
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}", method = RequestMethod.GET)
@@ -186,4 +184,18 @@ public class ProviderEditorController {
     }
 
 
+    private class TagEditor extends PropertyEditorSupport {
+
+        @Override
+        public void setAsText(String text) throws IllegalArgumentException {
+            System.out.println(tagService);
+            setValue(tagService.getByName(text));
+        }
+
+        @Override
+        public String getAsText() {
+            return ((Tag) getValue()).getTagText();
+        }
+
+    }
 }

@@ -1,10 +1,11 @@
-body {
-    margin: 0px;
+.error {
+    color: #ff0000;
 }
 
-.container {
-}
-
-.btn-group {
-    display: flex;
+.errorblock {
+    color: #000;
+    background-color: #ffEEEE;
+    border: 3px solid #ff0000;
+    padding: 8px;
+    margin: 16px;
 }

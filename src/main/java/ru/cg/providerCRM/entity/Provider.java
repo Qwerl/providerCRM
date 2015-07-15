@@ -1,6 +1,10 @@
 package ru.cg.providerCRM.entity;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,21 +18,31 @@ public class Provider {
     private Long id;
 
     @Column(name = "NAME")
+    @NotBlank(message = "низя")
+    @Size(min = 1, max = 255)
     private String name;
 
     @Column(name = "ADDRESS")
+    @NotBlank(message = "низя")
+    @Size(min = 1, max = 255)
     private String address;
 
     @Column(name = "PHONE_NUMBER")
+    @NotEmpty
+    @Size(min = 1, max = 255)
     private String phoneNumber;
 
     @Column(name = "STORAGE_ADDRESS")
+    @NotEmpty
+    @Size(min = 0, max = 255)
     private String storageAddress;
 
     @Column(name = "NOTE")
+    @NotEmpty
+    @Size(min = 0, max = 255)
     private String note;
 
-    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Employee> employees = new ArrayList<Employee>();
 
     @OneToMany
@@ -137,51 +151,19 @@ public class Provider {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Provider provider = (Provider) o;
-
-        if (!id.equals(provider.id)) return false;
-        if (!name.equals(provider.name)) return false;
-        if (employees != null ? !employees.equals(provider.employees) : provider.employees != null) return false;
-        if (!address.equals(provider.address)) return false;
-        if (!phoneNumber.equals(provider.phoneNumber)) return false;
-        if (!storageAddress.equals(provider.storageAddress)) return false;
-        if (!note.equals(provider.note)) return false;
-        if (tags != null ? !tags.equals(provider.tags) : provider.tags != null) return false;
-        if (products != null ? !products.equals(provider.products) : provider.products != null) return false;
-        return !(documents != null ? !documents.equals(provider.documents) : provider.documents != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + (employees != null ? employees.hashCode() : 0);
-        result = 31 * result + address.hashCode();
-        result = 31 * result + phoneNumber.hashCode();
-        result = 31 * result + storageAddress.hashCode();
-        result = 31 * result + note.hashCode();
-        result = 31 * result + (tags != null ? tags.hashCode() : 0);
-        result = 31 * result + (products != null ? products.hashCode() : 0);
-        result = 31 * result + (documents != null ? documents.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Provider{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", employees=" + employees +
                 ", address='" + address + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", storageAddress='" + storageAddress + '\'' +
+                ", note='" + note + '\'' +
+                ", employees=" + employees +
+                ", documents=" + documents +
+                ", tags=" + tags +
+                ", products=" + products +
                 '}';
     }
-
 
 }
