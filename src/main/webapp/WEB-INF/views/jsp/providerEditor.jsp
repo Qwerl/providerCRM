@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="input" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -37,77 +39,75 @@
             </thead>
             <tbody>
 
-            <c:forEach items="${providerInfo.employees}" var="employee">
+            <c:forEach items="${providerInfo.employees}" var="currentEmployee">
                 <tr>
                     <c:choose>
                         <%-- Изменяемая ли строка --%>
-                        <c:when test="${editableEmployeeId == employee.id}">
-                            <form action="${pageContext.request.contextPath}/provider/${providerInfo.id}/edit/employee/${employee.id}"
-                                  method="post">
+                        <c:when test="${editableEmployeeId == currentEmployee.id}">
+                            <form:form action="/provider/${providerInfo.id}/edit/employee/${employee.id}" method="post"
+                                       commandName="employee">
+                                <%--action=""--%>
                                 <td>
-                                    <input type="text"
-                                           class="form-control"
-                                           value="${employee.position}"
-                                           name="position">
+                                    <form:input class="form-control"
+                                                path="position"/>
+                                    <form:errors path="position" cssClass="error"/>
                                 </td>
                                 <td>
-                                    <input type="text"
-                                           class="form-control"
-                                           value="${employee.fullName}"
-                                           name="fullName">
+                                    <form:input class="form-control"
+                                                path="fullName"/>
+                                    <form:errors path="fullName" cssClass="error"/>
                                 </td>
                                 <td>
-                                    <input type="text"
-                                           class="form-control"
-                                           value="${employee.email}"
-                                           name="email">
+                                    <form:input class="form-control"
+                                                path="email"/>
+                                    <form:errors path="email" cssClass="error"/>
                                 </td>
                                 <td>
-                                    <input type="text"
-                                           class="form-control"
-                                           value="${employee.workPhoneNumber}"
-                                           name="workPhoneNumber">
+                                    <form:input class="form-control"
+                                                path="workPhoneNumber"/>
+                                    <form:errors path="workPhoneNumber" cssClass="error"/>
                                 </td>
+
                                 <td>
-                                    <input type="text"
-                                           class="form-control"
-                                           value="${employee.homePhoneNumber}"
-                                           name="homePhoneNumber"></td>
+                                    <form:input class="form-control"
+                                                path="homePhoneNumber"/>
+                                    <form:errors path="homePhoneNumber" cssClass="error"/>
+                                </td>
                                 <td>
                                     <div class="form-actions">
                                         <button type="submit" class="btn btn-primary">Сохранить</button>
                                         <button type="button" onclick="history.back()" class="btn">Отменить</button>
                                     </div>
                                 </td>
-                            </form>
+                            </form:form>
                         </c:when>
                         <%-- Режим редактирования сотрудников --%>
                         <c:when test="${employeesEditing}">
-                            <td>${employee.position}</td>
-                            <td>${employee.fullName}</td>
-                            <td>${employee.email}</td>
-                            <td>${employee.workPhoneNumber}</td>
-                            <td>${employee.homePhoneNumber}</td>
+                            <td>${currentEmployee.position}</td>
+                            <td>${currentEmployee.fullName}</td>
+                            <td>${currentEmployee.email}</td>
+                            <td>${currentEmployee.workPhoneNumber}</td>
+                            <td>${currentEmployee.homePhoneNumber}</td>
                             <td>
                                 <div>
-                                    <form action="${pageContext.request.contextPath}/provider/${providerInfo.id}/edit/employee/${employee.id}"
+                                    <form action="${pageContext.request.contextPath}/provider/${providerInfo.id}/edit/employee/${currentEmployee.id}"
                                           method="get">
-                                        <button class="btn btn-primary" name="delete">Изменить</button>
+                                        <button type="submit" class="btn btn-primary">Изменить</button>
                                     </form>
-                                    <form action="${pageContext.request.contextPath}/provider/${providerInfo.id}/edit/employee/${employee.id}/delete"
+                                    <form action="${pageContext.request.contextPath}/provider/${providerInfo.id}/edit/employee/${currentEmployee.id}/delete"
                                           method="post">
-                                        <button class="btn btn-primary" name="delete">Удалить</button>
+                                        <button type="submit" class="btn btn-primary">Удалить</button>
                                     </form>
                                 </div>
                             </td>
                         </c:when>
                         <%-- Обычный просмотр --%>
                         <c:otherwise>
-                            <td>${employee.position}</td>
-                            <td>${employee.fullName}</td>
-                            <td>${employee.email}</td>
-                            <td>${employee.workPhoneNumber}</td>
-                            <td>${employee.homePhoneNumber}</td>
+                            <td>${currentEmployee.position}</td>
+                            <td>${currentEmployee.fullName}</td>
+                            <td>${currentEmployee.email}</td>
+                            <td>${currentEmployee.workPhoneNumber}</td>
+                            <td>${currentEmployee.homePhoneNumber}</td>
                             <td></td>
                         </c:otherwise>
                     </c:choose>
@@ -116,54 +116,43 @@
 
             <%-- Добавление нового сотрудника --%>
             <c:if test="${employeeWritePermission}">
-                <tr>
-                    <form class="form-horizontal" method="post" action='' name="employeeForm" id="employeeForm">
+
+                <form:form class="form-horizontal" method="post" action='' commandName="employee">
+                    <tr>
                         <td>
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="form-control" name="position"
-                                           placeholder="Введите должность">
-                                </div>
-                            </div>
+                            <form:input class="form-control" path="position" placeholder="Введите должность"/>
+                            <form:errors path="position" cssClass="error"/>
                         </td>
                         <td>
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="form-control" name="fullName" placeholder="Введите ФИО">
-                                </div>
-                            </div>
+                            <form:input class="form-control" path="fullName" placeholder="Введите ФИО"/>
+                            <form:errors path="fullName" cssClass="error"/>
                         </td>
                         <td>
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="form-control" name="email" placeholder="Введите Email">
-                                </div>
-                            </div>
+                            <form:input class="form-control" path="email" placeholder="Введите Email"/>
+                            <form:errors path="email" cssClass="error"/>
                         </td>
                         <td>
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="form-control" name="workPhoneNumber"
-                                           placeholder="Введите Раб. телефон">
-                                </div>
-                            </div>
+                            <form:input class="form-control" path="workPhoneNumber" placeholder="Введите Раб. телефон"/>
+                            <form:errors path="workPhoneNumber" cssClass="error"/>
+
                         </td>
                         <td>
-                            <div class="control-group">
-                                <div class="controls">
-                                    <input type="text" class="form-control" name="homePhoneNumber"
-                                           placeholder="Введите Моб. телефон">
-                                </div>
-                            </div>
+                            <form:input class="form-control" path="homePhoneNumber" placeholder="Введите Моб. телефон"/>
+                            <form:errors path="homePhoneNumber" cssClass="error"/>
                         </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                         <td>
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Сохранить</button>
-                                <button type="button" onclick="history.back()" class="btn">Отменить</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                            <button type="button" onclick="history.back()" class="btn">Отменить</button>
                         </td>
-                    </form>
-                </tr>
+                    </tr>
+                </form:form>
+
             </c:if>
             </tbody>
         </table>

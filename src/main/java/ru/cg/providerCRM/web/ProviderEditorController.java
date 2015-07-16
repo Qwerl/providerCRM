@@ -119,30 +119,28 @@ public class ProviderEditorController {
     public ModelAndView getPermissionToAddEmployeeToProvider(@PathVariable("providerId") String providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", true);
+        modelAndView.addObject("employee", new Employee());
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.POST)
     public ModelAndView addEmployeeToProvider(@PathVariable("providerId") String providerId,
-                                              @RequestParam(value = "position") String position,
-                                              @RequestParam(value = "fullName") String fullName,
-                                              @RequestParam(value = "email") String email,
-                                              @RequestParam(value = "workPhoneNumber") String workPhoneNumber,
-                                              @RequestParam(value = "homePhoneNumber") String homePhoneNumber) {
-        Employee employee = new Employee();
-        employee.setPosition(position);
-        employee.setFullName(fullName);
-        employee.setEmail(email);
-        employee.setWorkPhoneNumber(workPhoneNumber);
-        employee.setHomePhoneNumber(homePhoneNumber);
-        employee.setProvider(providerService.getById(Long.parseLong(providerId)));
-        employeeService.addEmployee(employee);
-
-        return new ModelAndView("redirect:/provider/" + providerId);
+                                              @Valid Employee validEmployee,
+                                              BindingResult result) {
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = providerFullInfo(providerId);
+            modelAndView.addObject("employeeWritePermission", true);
+            return modelAndView;
+        } else {
+            Employee employee = validEmployee;
+            employee.setProvider(providerService.getById(Long.parseLong(providerId)));
+            employeeService.addEmployee(employee);
+            return new ModelAndView("redirect:/provider/" + providerId);
+        }
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee", method = RequestMethod.GET)
-    public ModelAndView enableEditing(@PathVariable("providerId") String providerId) {
+    public ModelAndView enableEmployeesEditing(@PathVariable("providerId") String providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("employeesEditing", true);
@@ -155,6 +153,7 @@ public class ProviderEditorController {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("editableEmployeeId", employeeId);
+        modelAndView.addObject("employee", employeeService.getById(Long.parseLong(employeeId)));
         return modelAndView;
     }
 
@@ -165,22 +164,24 @@ public class ProviderEditorController {
         return new ModelAndView("redirect:/provider/" + providerId + "/edit/employee");
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId:.+}", method = RequestMethod.POST)
     public ModelAndView updateEmployee(@PathVariable("providerId") String providerId,
                                        @PathVariable("employeeId") String employeeId,
-                                       @RequestParam(value = "position") String position,
-                                       @RequestParam(value = "fullName") String fullName,
-                                       @RequestParam(value = "email") String email,
-                                       @RequestParam(value = "workPhoneNumber") String workPhoneNumber,
-                                       @RequestParam(value = "homePhoneNumber") String homePhoneNumber) {
-        Employee employee = employeeService.getById(Long.parseLong(employeeId));
-        employee.setPosition(position);
-        employee.setFullName(fullName);
-        employee.setEmail(email);
-        employee.setWorkPhoneNumber(workPhoneNumber);
-        employee.setHomePhoneNumber(homePhoneNumber);
-        employeeService.updateEmployee(employee);
-        return new ModelAndView("redirect:/provider/" + providerId);
+                                       @Valid Employee validEmployee,
+                                       BindingResult result) {
+        validEmployee.setId(Long.parseLong(employeeId));
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = providerFullInfo(providerId);
+            modelAndView.addObject("employeeWritePermission", false);
+            modelAndView.addObject("editableEmployeeId", employeeId);
+            modelAndView.addObject("employee", validEmployee);
+            return modelAndView;
+        } else {
+            Employee employee = validEmployee;
+            employee.setProvider(providerService.getById(Long.parseLong(providerId)));
+            employeeService.updateEmployee(employee);
+            return new ModelAndView("redirect:/provider/" + providerId);
+        }
     }
 
     //todo
@@ -188,7 +189,6 @@ public class ProviderEditorController {
 
         @Override
         public void setAsText(String text) throws IllegalArgumentException {
-            System.out.println(tagService);
             setValue(tagService.getByName(text));
         }
 

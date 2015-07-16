@@ -14,8 +14,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     public EmployeeRepository repository;
 
-    public void addEmployee(Employee employee) {
-        repository.saveAndFlush(employee);
+    public Employee addEmployee(Employee employee) {
+        return repository.saveAndFlush(employee);
     }
 
     public void deleteEmployee(Employee employee) {

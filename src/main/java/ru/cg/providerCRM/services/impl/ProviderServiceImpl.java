@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.cg.providerCRM.entity.*;
 import ru.cg.providerCRM.repository.DocumentRepository;
-import ru.cg.providerCRM.repository.EmployeeRepository;
 import ru.cg.providerCRM.repository.ProviderRepository;
+import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProviderService;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class ProviderServiceImpl implements ProviderService {
     public ProviderRepository providerRepository;
 
     @Autowired
-    public EmployeeRepository employeeRepository;
+    public EmployeeService employeeService;
 
     @Autowired
     public DocumentRepository documentRepository;
@@ -54,17 +54,15 @@ public class ProviderServiceImpl implements ProviderService {
 
     public void addEmployee(Employee newEmployee, Long providerId) {
         Provider provider = providerRepository.findOne(providerId);
-        Employee employee = employeeRepository.saveAndFlush(newEmployee);
+        Employee employee = employeeService.addEmployee(newEmployee);
 
         provider.addEmployee(employee);
         providerRepository.saveAndFlush(provider);
     }
 
     public void deleteEmployee(Long employeeId, Long providerId) {
-        Provider provider = providerRepository.findOne(providerId);
-        Employee employee = employeeRepository.findOne(employeeId);
-        provider.removeEmployee(employee);
-        providerRepository.saveAndFlush(provider);
+        Employee employee = employeeService.getById(employeeId);
+        employeeService.deleteEmployee(employee);
     }
 
     public List<Provider> getProvidersContainsTag(Tag tag) {

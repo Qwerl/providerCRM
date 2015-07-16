@@ -1,6 +1,10 @@
 package ru.cg.providerCRM.entity;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "EMPLOYEE")
@@ -12,18 +16,26 @@ public class Employee {
     private Long id;
 
     @Column(name = "FULL_NAME")
+    @NotBlank
     private String fullName;
 
     @Column(name = "EMAIL")
+    @NotBlank
+    @Email
     private String email;
 
     @Column(name = "HOME_PHONE_NUMBER")
+    @NotBlank
+    @Size(min = 2, max = 20)
     private String homePhoneNumber;
 
     @Column(name = "WORK_PHONE_NUMBER")
+    @NotBlank
+    @Size(min = 2, max = 20)
     private String workPhoneNumber;
 
     @Column(name = "POSITION")
+    @NotBlank
     private String position;
 
     @ManyToOne
@@ -99,37 +111,6 @@ public class Employee {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Employee employee = (Employee) o;
-
-        if (!id.equals(employee.id)) return false;
-        if (!fullName.equals(employee.fullName)) return false;
-        if (!email.equals(employee.email)) return false;
-        if (!homePhoneNumber.equals(employee.homePhoneNumber)) return false;
-        if (!workPhoneNumber.equals(employee.workPhoneNumber)) return false;
-        if (!position.equals(employee.position)) return false;
-        if (provider != null ? !provider.equals(employee.provider) : employee.provider != null) return false;
-        return !(producer != null ? !producer.equals(employee.producer) : employee.producer != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + fullName.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + homePhoneNumber.hashCode();
-        result = 31 * result + workPhoneNumber.hashCode();
-        result = 31 * result + position.hashCode();
-        result = 31 * result + (provider != null ? provider.hashCode() : 0);
-        result = 31 * result + (producer != null ? producer.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Employee{" +
                 "id=" + id +
@@ -137,6 +118,9 @@ public class Employee {
                 ", email='" + email + '\'' +
                 ", homePhoneNumber='" + homePhoneNumber + '\'' +
                 ", workPhoneNumber='" + workPhoneNumber + '\'' +
+                ", position='" + position + '\'' +
+                ", provider=" + provider +
+                ", producer=" + producer +
                 '}';
     }
 }
