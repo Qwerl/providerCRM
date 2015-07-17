@@ -6,7 +6,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.Employee;
 import ru.cg.providerCRM.entity.Product;
@@ -16,11 +19,10 @@ import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProductService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
+import ru.cg.providerCRM.web.form.ProviderForm;
 
 import javax.validation.Valid;
 import java.beans.PropertyEditorSupport;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @Scope("request")
@@ -43,6 +45,11 @@ public class ProviderEditorController {
     public void initBinder(WebDataBinder b) {
         b.registerCustomEditor(Tag.class, new TagEditor());
     }
+
+   @InitBinder
+   public void initProductBinder(WebDataBinder b) {
+       b.registerCustomEditor(Product.class, new ProductEditor());
+   }
 
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
     public ModelAndView displayProviderRegisterForm() {
@@ -70,48 +77,44 @@ public class ProviderEditorController {
         ModelAndView modelAndView = new ModelAndView("providerEditor");
         Provider provider = providerService.getById(Long.parseLong(providerId));
         modelAndView.addObject("employees", provider.getEmployees());
-        modelAndView.addObject("providerInfo", provider);
+        modelAndView.addObject("provider", provider);
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit", method = RequestMethod.GET)
     public ModelAndView editProviderForm(@PathVariable("providerId") String providerId) {
-        ModelAndView modelAndView = new ModelAndView("providerEditor");
+        ModelAndView modelAndView = providerFullInfo(providerId);
         Provider provider = providerService.getById(Long.parseLong(providerId));
-        modelAndView.addObject("providerInfo", provider);
         modelAndView.addObject("providerEditing", true);
-        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
         modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
+        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
+        modelAndView.addObject("providerForm", new ProviderForm(provider));
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit", method = RequestMethod.POST)
-    public ModelAndView editProvider(@PathVariable("providerId") String providerId,
-                                     @RequestParam(value = "providerName") String name,
-                                     @RequestParam(value = "providerAddress") String address,
-                                     @RequestParam(value = "providerStorageAddress") String storageAddress,
-                                     @RequestParam(value = "providerPhoneNumber") String phoneNumber,
-                                     @RequestParam(value = "providerNote") String note,
-                                     @RequestParam(value = "tags") List<String> tags,
-                                     @RequestParam(value = "products") List<String> products) {
-        List<Product> productList = new ArrayList<>(products.size());
-        for (String product : products) {
-            productList.add(productService.getById(Long.parseLong(product)));
+    public ModelAndView updateProvider(@PathVariable("providerId") String providerId,
+                                       @Valid ProviderForm providerForm,
+                                       BindingResult result) {
+        providerForm.setId(Long.parseLong(providerId));
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = providerFullInfo(providerId);
+            modelAndView.addObject("providerEditing", true);
+            if (providerForm.getProducts() == null){
+                providerForm.setProducts(ListUtils.EMPTY_LIST);
+            }
+            modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), providerForm.getProducts()));            if (providerForm.getTags() == null){
+                providerForm.setTags(ListUtils.EMPTY_LIST);
+            }
+            modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), providerForm.getTags()));
+
+            return modelAndView;
+        } else {
+            Provider provider = providerService.getById(Long.parseLong(providerId));
+            providerForm.fillProvider(provider);
+            providerService.updateProvider(provider);
+            return new ModelAndView("redirect:/provider/" + provider.getId());
         }
-        List<Tag> tagList = new ArrayList<>(tags.size());
-        for (String tag : tags) {
-            tagList.add(tagService.getById(Long.parseLong(tag)));
-        }
-        Provider provider = providerService.getById(Long.parseLong(providerId));
-        provider.setName(name);
-        provider.setAddress(address);
-        provider.setStorageAddress(storageAddress);
-        provider.setPhoneNumber(phoneNumber);
-        provider.setNote(note);
-        provider.setTags(tagList);
-        provider.setProducts(productList);
-        providerService.updateProvider(provider);
-        return new ModelAndView("redirect:/provider/" + provider.getId());
     }
 
 
@@ -195,6 +198,20 @@ public class ProviderEditorController {
         @Override
         public String getAsText() {
             return ((Tag) getValue()).getTagText();
+        }
+
+    }
+
+    private class ProductEditor extends PropertyEditorSupport {
+
+        @Override
+        public void setAsText(String text) throws IllegalArgumentException {
+            setValue(productService.getByName(text));
+        }
+
+        @Override
+        public String getAsText() {
+            return ((Product) getValue()).getName();
         }
 
     }

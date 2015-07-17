@@ -34,10 +34,10 @@ public class Tag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Tag tag1 = (Tag) o;
+        Tag tag = (Tag) o;
 
-        if (!id.equals(tag1.id)) return false;
-        return tagText.equals(tag1.tagText);
+        if (!id.equals(tag.id)) return false;
+        return tagText.equals(tag.tagText);
 
     }
 

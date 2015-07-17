@@ -50,7 +50,7 @@ public class Product {
 
         if (!id.equals(product.id)) return false;
         if (!name.equals(product.name)) return false;
-        return price.equals(product.price);
+        return !(price != null ? !price.equals(product.price) : product.price != null);
 
     }
 
@@ -58,7 +58,16 @@ public class Product {
     public int hashCode() {
         int result = id.hashCode();
         result = 31 * result + name.hashCode();
-        result = 31 * result + price.hashCode();
+        result = 31 * result + (price != null ? price.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                '}';
     }
 }

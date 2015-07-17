@@ -18,6 +18,10 @@ public class ProductServiceImpl implements ProductService{
         return productRepository.findOne(id);
     }
 
+    public Product getByName(String name) {
+        return productRepository.findByName(name);
+    }
+
     public List<Product> getAllProduct() {
         return productRepository.findAll();
     }
