@@ -80,7 +80,7 @@ public class ProviderServiceImpl implements ProviderService {
     public void addDocument(Document newDocument, Long providerId) {
         Provider provider = providerRepository.findOne(providerId);
         Document document = documentRepository.saveAndFlush(newDocument);
-        provider.addDocument(document);
-        providerRepository.saveAndFlush(provider);
+        document.setProvider(provider);
+        documentRepository.saveAndFlush(document);
     }
 }

@@ -21,6 +21,10 @@ public class Document {
     @Column(name = "FILE")
     private byte[] file;
 
+    @ManyToOne
+    @JoinColumn(name = "PROVIDER_ID")
+    private Provider provider;
+
     public Long getId() {
         return id;
     }
@@ -51,6 +55,14 @@ public class Document {
 
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
     @Override

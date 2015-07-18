@@ -117,12 +117,6 @@ public class Producer {
         return "Producer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", note='" + note + '\'' +
-                ", employees=" + employees +
-                ", providers=" + providers +
-                ", tags=" + tags +
                 '}';
     }
 

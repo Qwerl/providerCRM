@@ -29,11 +29,6 @@ public class ConnectionTest {
             e.printStackTrace();
         }
 
-        Document document = new Document();
-        document.setName(file.getName());
-        document.setFile(bFile);
-        document.setExtension("." + extension);
-        session.save(document);
 
         Tag firstTag = new Tag();
         firstTag.setTagText("firstTag");
@@ -58,7 +53,6 @@ public class ConnectionTest {
         List<Product> products = Arrays.asList(table);
         provider.setProducts(products);
         provider.setNote("test note provider");
-        provider.setDocuments(Arrays.asList(document));
         session.save(provider);
 
         Producer producer = new Producer();
@@ -88,6 +82,13 @@ public class ConnectionTest {
         dima.setPosition("Manager");
         dima.setProvider(provider);
         session.save(dima);
+
+        Document document = new Document();
+        document.setName(file.getName());
+        document.setFile(bFile);
+        document.setExtension("." + extension);
+        document.setProvider(provider);
+        session.save(document);
 
 
         session.getTransaction().commit();

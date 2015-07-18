@@ -45,7 +45,7 @@ public class Provider {
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Employee> employees = new ArrayList<Employee>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documents = new ArrayList<Document>();
 
     @ManyToMany
