@@ -16,11 +16,11 @@ import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProducerService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
+import ru.cg.providerCRM.web.form.EmployeeForm;
+import ru.cg.providerCRM.web.form.ProducerForm;
 
 import javax.validation.Valid;
 import java.beans.PropertyEditorSupport;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @Scope("request")
@@ -42,6 +42,7 @@ public class ProducerEditorController {
     @InitBinder
     public void initBinder(WebDataBinder b) {
         b.registerCustomEditor(Tag.class, new TagEditor());
+        b.registerCustomEditor(Provider.class, new ProviderEditor());
     }
 
     @RequestMapping(value = "/producer/add", method = RequestMethod.GET)
@@ -70,72 +71,72 @@ public class ProducerEditorController {
     public ModelAndView producerFullInfo(@PathVariable("producerId") String producerId) {
         ModelAndView modelAndView = new ModelAndView("producerEditor");
         Producer producer = producerService.getById(Long.parseLong(producerId));
-        modelAndView.addObject("producerInfo", producer);
+        modelAndView.addObject("producerForm", new ProducerForm(producer));
+        addEmployees(modelAndView, producerId);
         return modelAndView;
     }
 
     @RequestMapping(value = "/producer/{producerId:.+}/edit", method = RequestMethod.GET)
-    public ModelAndView editProducerForm(@PathVariable("producerId") String producerId) {
+    public ModelAndView displayProducerForm(@PathVariable("producerId") String producerId) {
         ModelAndView modelAndView = new ModelAndView("producerEditor");
         Producer producer = producerService.getById(Long.parseLong(producerId));
-        modelAndView.addObject("producerInfo", producer);
+        modelAndView.addObject("producerForm", new ProducerForm(producer));
         modelAndView.addObject("producerEditing", true);
         modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), producer.getTags()));
         modelAndView.addObject("otherProviders", ListUtils.subtract(providerService.getAllProviders(), producer.getProviders()));
+        addEmployees(modelAndView, producerId);
         return modelAndView;
     }
 
     @RequestMapping(value = "/producer/{producerId:.+}/edit", method = RequestMethod.POST)
-    public ModelAndView editProducer(@PathVariable("producerId") String producerId,
-                                     @RequestParam(value = "producerName") String name,
-                                     @RequestParam(value = "producerAddress") String address,
-                                     @RequestParam(value = "producerPhoneNumber") String phoneNumber,
-                                     @RequestParam(value = "producerNote") String note,
-                                     @RequestParam(value = "providers") List<String> providers,
-                                     @RequestParam(value = "tags") List<String> tags) {
-        List<Provider> providerList = new ArrayList<>(providers.size());
-        for (String provider : providers) {
-            providerList.add(providerService.getById(Long.parseLong(provider)));
+    public ModelAndView updateProducer(@PathVariable("producerId") String producerId,
+                                       @Valid ProducerForm producerForm,
+                                       BindingResult result) {
+        producerForm.setId(Long.parseLong(producerId));
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = new ModelAndView("producerEditor");
+            modelAndView.addObject("producerEditing", true);
+            if (producerForm.getProviders() == null) {
+                producerForm.setProviders(ListUtils.EMPTY_LIST);
+            }
+            modelAndView.addObject("otherProviders", ListUtils.subtract(providerService.getAllProviders(), producerForm.getProviders()));
+            if (producerForm.getTags() == null) {
+                producerForm.setTags(ListUtils.EMPTY_LIST);
+            }
+            modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), producerForm.getTags()));
+            addEmployees(modelAndView, producerId);
+            return modelAndView;
+        } else {
+            Producer producer = producerService.getById(Long.parseLong(producerId));
+            producerForm.fillProducer(producer);
+            producerService.updateProducer(producer);
+            return new ModelAndView("redirect:/producer/" + producer.getId());
         }
-        List<Tag> tagList = new ArrayList<>(tags.size());
-        for (String tag : tags) {
-            tagList.add(tagService.getById(Long.parseLong(tag)));
-        }
-        Producer producer = producerService.getById(Long.parseLong(producerId));
-        producer.setName(name);
-        producer.setAddress(address);
-        producer.setPhoneNumber(phoneNumber);
-        producer.setNote(note);
-        producer.setProviders(providerList);
-        producer.setTags(tagList);
-        producerService.updateProducer(producer);
-        return new ModelAndView("redirect:/producer/" + producer.getId());
     }
 
     @RequestMapping(value = "/producer/{producerId:.+}/edit/addEmployee", method = RequestMethod.GET)
     public ModelAndView getPermissionToAddEmployeeToProducer(@PathVariable("producerId") String producerId) {
         ModelAndView modelAndView = producerFullInfo(producerId);
         modelAndView.addObject("employeeWritePermission", true);
+        modelAndView.addObject("employeeForm", new EmployeeForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "producer/{producerId:.+}/edit/addEmployee", method = RequestMethod.POST)
     public ModelAndView addEmployeeToProducer(@PathVariable("producerId") String producerId,
-                                              @RequestParam(value = "position") String position,
-                                              @RequestParam(value = "fullName") String fullName,
-                                              @RequestParam(value = "email") String email,
-                                              @RequestParam(value = "workPhoneNumber") String workPhoneNumber,
-                                              @RequestParam(value = "homePhoneNumber") String homePhoneNumber) {
-        Employee employee = new Employee();
-        employee.setPosition(position);
-        employee.setFullName(fullName);
-        employee.setEmail(email);
-        employee.setWorkPhoneNumber(workPhoneNumber);
-        employee.setHomePhoneNumber(homePhoneNumber);
-        employee.setProducer(producerService.getById(Long.parseLong(producerId)));
-        employeeService.addEmployee(employee);
-
-        return new ModelAndView("redirect:/producer/" + producerId);
+                                              @Valid EmployeeForm employeeForm,
+                                              BindingResult result) {
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = producerFullInfo(producerId);
+            modelAndView.addObject("employeeWritePermission", true);
+            return modelAndView;
+        } else {
+            Employee employee = new Employee();
+            employeeForm.fillEmployee(employee);
+            employee.setProducer(producerService.getById(Long.parseLong(producerId)));
+            employeeService.addEmployee(employee);
+            return new ModelAndView("redirect:/producer/" + producerId);
+        }
     }
 
     @RequestMapping(value = "/producer/{producerId:.+}/edit/employee", method = RequestMethod.GET)
@@ -152,6 +153,7 @@ public class ProducerEditorController {
         ModelAndView modelAndView = producerFullInfo(producerId);
         modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("editableEmployeeId", employeeId);
+        modelAndView.addObject("employeeForm", new EmployeeForm(employeeService.getById(Long.parseLong(employeeId))));
         return modelAndView;
     }
 
@@ -165,19 +167,27 @@ public class ProducerEditorController {
     @RequestMapping(value = "/producer/{producerId:.+}/edit/employee/{employeeId}", method = RequestMethod.POST)
     public ModelAndView updateEmployee(@PathVariable("producerId") String producerId,
                                        @PathVariable("employeeId") String employeeId,
-                                       @RequestParam(value = "position") String position,
-                                       @RequestParam(value = "fullName") String fullName,
-                                       @RequestParam(value = "email") String email,
-                                       @RequestParam(value = "workPhoneNumber") String workPhoneNumber,
-                                       @RequestParam(value = "homePhoneNumber") String homePhoneNumber) {
-        Employee employee = employeeService.getById(Long.parseLong(employeeId));
-        employee.setPosition(position);
-        employee.setFullName(fullName);
-        employee.setEmail(email);
-        employee.setWorkPhoneNumber(workPhoneNumber);
-        employee.setHomePhoneNumber(homePhoneNumber);
-        employeeService.updateEmployee(employee);
-        return new ModelAndView("redirect:/producer/" + producerId);
+                                       @Valid EmployeeForm employeeForm,
+                                       BindingResult result) {
+        employeeForm.setId(Long.parseLong(employeeId));
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = producerFullInfo(producerId);
+            modelAndView.addObject("employeeWritePermission", false);
+            modelAndView.addObject("editableEmployeeId", employeeId);
+            return modelAndView;
+        } else {
+            Employee employee = employeeService.getById(Long.parseLong(employeeId));
+            employeeForm.fillEmployee(employee);
+            employee.setId(Long.parseLong(employeeId));
+            employee.setProducer(producerService.getById(Long.parseLong(producerId)));
+            employeeService.updateEmployee(employee);
+            return new ModelAndView("redirect:/producer/" + producerId);
+        }
+    }
+
+    private void addEmployees(ModelAndView modelAndView, String producerId) {
+        Producer producer = producerService.getById(Long.parseLong(producerId));
+        modelAndView.addObject("employees", producer.getEmployees());
     }
 
     //todo
@@ -185,7 +195,6 @@ public class ProducerEditorController {
 
         @Override
         public void setAsText(String text) throws IllegalArgumentException {
-            System.out.println(tagService);
             setValue(tagService.getByName(text));
         }
 
@@ -196,4 +205,19 @@ public class ProducerEditorController {
 
     }
 
+    private class ProviderEditor extends PropertyEditorSupport {
+
+        @Override
+        public void setAsText(String text) throws IllegalArgumentException {
+            System.out.println("sat");
+            setValue(providerService.getByName(text));
+        }
+
+        @Override
+        public String getAsText() {
+            System.out.println("gat");
+            return ((Provider) getValue()).getName();
+        }
+
+    }
 }

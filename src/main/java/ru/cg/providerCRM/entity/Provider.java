@@ -151,19 +151,19 @@ public class Provider {
     }
 
     @Override
-    public String toString() {
-        return "Provider{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", storageAddress='" + storageAddress + '\'' +
-                ", note='" + note + '\'' +
-                ", employees=" + employees +
-                ", documents=" + documents +
-                ", tags=" + tags +
-                ", products=" + products +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Provider provider = (Provider) o;
+
+        return id.equals(provider.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 
 }

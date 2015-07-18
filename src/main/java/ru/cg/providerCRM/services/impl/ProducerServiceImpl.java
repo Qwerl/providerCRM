@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.cg.providerCRM.entity.*;
 import ru.cg.providerCRM.repository.*;
+import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProducerService;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class ProducerServiceImpl implements ProducerService {
     public ProducerRepository producerRepository;
 
     @Autowired
-    public EmployeeRepository employeeRepository;
+    public EmployeeService employeeService;
 
     public void addProducer(Producer producer) {
         producerRepository.saveAndFlush(producer);
@@ -49,7 +50,7 @@ public class ProducerServiceImpl implements ProducerService {
 
     public void addEmployee(Employee newEmployee, Long producerId) {
         Producer producer = producerRepository.findOne(producerId);
-        Employee employee = employeeRepository.saveAndFlush(newEmployee);
+        Employee employee = employeeService.addEmployee(newEmployee);
         producer.addEmployee(employee);
         producerRepository.saveAndFlush(producer);
     }
@@ -68,9 +69,7 @@ public class ProducerServiceImpl implements ProducerService {
 
 
     public void deleteEmployee(Long employeeId, Long producerId) {
-        Producer producer = producerRepository.findOne(producerId);
-        Employee employee = employeeRepository.findOne(employeeId);
-        producer.removeEmployee(employee);
-        producerRepository.saveAndFlush(producer);
+        Employee employee = employeeService.getById(employeeId);
+        employeeService.deleteEmployee(employee);
     }
 }
