@@ -1,0 +1,178 @@
+/* reset browser styles */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1.2;
+}
+ol {
+    padding-left: 1.4em;
+    list-style: decimal;
+}
+ul {
+    padding-left: 1.4em;
+    list-style: square;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+/* end reset browser styles */
+* {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    height: 600px;
+    float: left;
+    font-family: Calibri;
+    overflow: hidden;
+}
+
+.sidebar {
+    float: left;
+    width: 20%;
+    height: 100%;
+    padding: 60px 20px 0 20px;
+    background: #337AB7;
+
+}
+
+.infoTable {
+    float: right;
+    width: 80%;
+    height: 100%;
+}
+
+.infoBlock {
+    position: relative;
+    width: 33.333333%;
+    height: 100%;
+    border-right: 1px solid #a2a2a2;
+    border-bottom: 1px solid #a2a2a2;
+    background: #ffffff;
+    display: block;
+}
+
+.header {
+    border-bottom: 1px solid #a2a2a2;
+    color: #2b669a;
+    text-align: center;
+    background: #D3D3D3;
+    display: block;
+    height: 8%;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.info {
+    width: 100%;
+    height: 92%;
+    padding: 12px 15px 40px 12px;
+    overflow-y: auto;
+}
+
+#block1 {
+    float: left;
+}
+
+#block2 {
+    float: left;
+}
+
+#block3 {
+    float: right;
+}
+
+.button-container {
+    width: 100%;
+}
+
+.button-container > a{
+    width: 100%;
+    height: 28px;
+    float: left;
+    text-decoration: none;
+    padding: 6px 8% 6px 8%;
+    overflow: hidden;
+    border-radius: 3px;
+}
+
+.sidebar span {
+    color: white;
+    font-family: calibri;
+}
+
+.info span {
+    color: black;
+    font-family: calibri;
+}
+
+.sidebar .button-container a {
+    margin: 10px 0;
+}
+
+.info .button-container a {
+    margin: 5px 0;
+}
+
+.sidebar .button-container #selected {
+    background: #c0504d;
+}
+
+.info .button-container #selected {
+    background: #9bbb59;
+}
+
+.search{
+    width: 100%;
+    height: 28px;
+    float: left;
+    text-decoration: none;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.search input {
+    width: 75%;
+    height: 100%;
+    float: left;
+    border: 0;
+    padding: 5%;
+    background: #eee;
+    border-radius: 3px 0 0 3px;
+    font: bold 20px 'Calibri';
+}
+
+.search input:focus {
+    outline: 0;
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,.8) inset;
+}
+
+.search button {
+    width: 25%;
+    height: 100%;
+    float: right;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    /*font: bold 15px/40px 'lucida sans', 'trebuchet MS', 'Tahoma';*/
+    color: #fff;
+    text-transform: uppercase;
+    background: #d83c3c;
+    border-radius: 0 3px 3px 0;
+
+}

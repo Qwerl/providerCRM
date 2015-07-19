@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>testTask</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link type="text/css" href="css/styles.css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container">
+    <div class="sidebar">
+        <div class="button-container">
+            <a href="/selectProvider" >
+                <span>Поставщики</span>
+            </a>
+            <a href="/selectProducer">
+                <span>Производители</span>
+            </a>
+            <a href="/selectProducer" id="selected">
+                <span>Поиск</span>
+            </a>
+            <form class="search" action="/search" method="post">
+                <input type="text" name="tag" required>
+                <button type="submit">O</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="infoTable">
+        <div class="infoBlock" id="block1">
+            <div class="header">Поставщики</div>
+            <div class="info">
+                <div class="button-container">
+                    <a href="/pika" id="selected">
+                        <span>пикачу2</span>
+                    </a>
+                    <a href="/pika2">
+                        <span>пикачу2</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="infoBlock" id="block2">
+            <div class="header">пикачу</div>
+            <div class="info">
+                <div class="button-container">
+                    <a href="/pika">
+                        <span>пикачу2</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="infoBlock" id="block3">
+            <div class="header">пикачу</div>
+            <div class="info">
+                <div class="button-container">
+                    <a href="/pika">
+                        <span>пикачу3</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
