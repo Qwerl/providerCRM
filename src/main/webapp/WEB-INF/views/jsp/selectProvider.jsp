@@ -8,105 +8,106 @@
 
 <head>
     <title>testTask</title>
-    <spring:url value="/resources/core/css/styles.css" var="coreCss"/>
+    <spring:url value="/resources/core/css/newStyles.css" var="coreCss"/>
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link type="text/css" href="${coreCss}" rel="stylesheet"/>
 </head>
 
 <body>
-<div class="sidebar">
-    <form action="/selectProvider" method="get">
-        <input type="submit" value="Поставщики"/>
-    </form>
-    <br/>
+<div class="container">
 
-    <form action="/selectProducer" method="get">
-        <input type="submit" value="Производители"/>
-    </form>
-    <br/>
+    <div class="sidebar">
+        <div class="button-container">
+            <a href="/selectProvider" id="selected">
+                <span>Поставщики</span>
+            </a>
+            <a href="/selectProducer">
+                <span>Производители</span>
+            </a>
+            <a href="/search">
+                <span>Поиск</span>
+            </a>
 
-    <form action="/search" method="post">
-        <p><input type="submit" value="Поиск"></p>
-
-        <p><input type="text" size="10" name="tag"></p>
-    </form>
-</div>
-<div class="infoTable">
-
-
-    <div class="infoBlock" id="block1">
-        <div class="header">
-            <p>Список поставщиков</p>
-        </div>
-        <div class="info">
-            <p>
-
-            <form action="/provider/add" method="get">
-                <input type="submit" value="Добавить"/>
+            <form class="search" action="/search" method="post">
+                <input name="tag" required>
+                <button type="submit">O</button>
             </form>
-            </p>
-
-            <c:forEach items="${providers}" var="provider" varStatus="providerStatus">
-                <p>
-                <form action="/selectProvider/<c:out value="${provider.id}"/>" method="get">
-                    <input type="submit" value="<c:out value="${provider.name}"/>">
-                </form>
-                </p>
-            </c:forEach>
-
         </div>
     </div>
 
+    <div class="infoTable">
+        <div class="infoBlock" id="block1">
+            <div class="header">Список поставщиков</div>
+            <div class="info">
+                <div class="button-container">
+                    <form action="/provider/add" method="get">
+                        <input type="submit" value="Добавить"/>
+                    </form>
+                    <br/>
 
-    <div class="infoBlock" id="block2">
-        <div class="header">
-            <p>Реквизиты</p>
+                    <c:forEach items="${providers}" var="provider" varStatus="providerStatus">
+                        <a href="/selectProvider/<c:out value="${provider.id}"/>"
+                           <c:if test="${provider.id == providerInfo.id}">id="selected"</c:if> >
+                            <span><c:out value="${provider.name}"/></span>
+                        </a>
+                    </c:forEach>
+                </div>
+            </div>
         </div>
-        <div class="info">
-            <c:if test="${not empty providerInfo}">
-                <p>Данные по поставщику:</p>
 
-                <p><c:out value="${providerInfo.name}"/></p>
+        <div class="infoBlock" id="block2">
+            <div class="header">Реквизиты</div>
+            <div class="info">
 
-                <p><c:out value="${providerInfo.address}"/></p>
+                <c:if test="${not empty providerInfo}">
+                    <div class="textInfo">
 
-                <p><c:out value="${providerInfo.storageAddress}"/></p>
+                        <div class="text-area">
+                            <p>Данные по поставщику:</p><br/>
 
-                <p><c:out value="${providerInfo.phoneNumber}"/></p>
+                            <p>Название:<br/>
+                                <c:out value="${providerInfo.name}"/>
+                            </p><br/>
 
-                <p>
+                            <p>Адрес офиса:<br/>
+                                <c:out value="${providerInfo.address}"/>
+                            </p><br/>
 
-                <form action="/selectProvider/<c:out value="${providerInfo.id}"/>/documents" method="get">
-                    <button type="submit">К списку учредительных документов"</button>
-                </form>
-                </p>
-                <p>
+                            <p>Адрес склада:<br/>
+                                <c:out value="${providerInfo.storageAddress}"/>
+                            </p><br/>
 
-                <form action="/provider/<c:out value="${providerInfo.id}"/>" method="get">
-                    <button type="submit">Показать полные данные</button>
-                </form>
-                </p>
-            </c:if>
+                            <p>Контактные данные:<br/>
+                                <c:out value="${providerInfo.phoneNumber}"/>
+                            </p><br/>
+                        </div>
+
+                        <div class="button-container">
+                            <a href="/selectProvider/<c:out value="${providerInfo.id}"/>/documents">
+                                <span>К списку учредительных документов</span>
+                            </a>
+                            <a href="/provider/<c:out value="${providerInfo.id}"/>">
+                                <span>Показать полные данные</span>
+                            </a>
+                        </div>
+
+                    </div>
+                </c:if>
+            </div>
+        </div>
+
+        <div class="infoBlock" id="block3">
+            <div class="header">Поставляемое оборудование</div>
+            <div class="info">
+                <div class="button-container">
+                    <c:forEach items="${productList}" var="product" varStatus="productStatus">
+                        <a><span><c:out value="${product.name}"/></span></a>
+                    </c:forEach>
+                </div>
+            </div>
         </div>
     </div>
-
-
-    <div class="infoBlock" id="block3">
-        <div class="header">
-            <p>Поставляемое оборудование</p>
-        </div>
-        <div class="info">
-            <c:forEach items="${productList}" var="product" varStatus="productStatus">
-                <p>
-                    <button>
-                        <c:out value="${product.name}"/>
-                    </button>
-                </p>
-            </c:forEach>
-        </div>
-    </div>
-
 </div>
 </body>
 </html>

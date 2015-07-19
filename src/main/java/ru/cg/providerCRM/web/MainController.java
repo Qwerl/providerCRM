@@ -143,6 +143,11 @@ public class MainController {
         modelAndView.addObject("providerList", providerList);
     }
 
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public ModelAndView displaySearch() {
+       return new ModelAndView("search");
+    }
+
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public ModelAndView search(@RequestParam(value = "tag") String tagText) {
         ModelAndView modelAndView = new ModelAndView("search");

@@ -157,13 +157,23 @@ public class Provider {
 
         Provider provider = (Provider) o;
 
-        return id.equals(provider.id);
+        if (id != null ? !id.equals(provider.id) : provider.id != null) return false;
+        return !(name != null ? !name.equals(provider.name) : provider.name != null);
 
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 
+    @Override
+    public String toString() {
+        return "Provider{" +
+                "name='" + name + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

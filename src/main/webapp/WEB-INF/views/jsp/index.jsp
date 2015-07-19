@@ -7,44 +7,46 @@
 
 <head>
     <title>testTask</title>
-    <spring:url value="/resources/core/css/styles.css" var="coreCss"/>
+    <spring:url value="/resources/core/css/newStyles.css" var="coreCss"/>
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link type="text/css" href="${coreCss}" rel="stylesheet"/>
 </head>
-
 <body>
-<div class="sidebar">
-    <form action="/selectProvider" method="get">
-        <input type="submit" value="Поставщики"/>
-    </form>
-    <br/>
+<div class="container">
+    <div class="sidebar">
+        <div class="button-container">
+            <a href="/selectProvider">
+                <span>Поставщики</span>
+            </a>
+            <a href="/selectProducer">
+                <span>Производители</span>
+            </a>
+            <a href="/search">
+                <span>Поиск</span>
+            </a>
 
-    <form action="/selectProducer" method="get">
-        <input type="submit" value="Производители"/>
-    </form>
-    <br/>
+            <form class="search" action="/search" method="post">
+                <input name="tag" required>
+                <button type="submit">O</button>
+            </form>
+        </div>
+    </div>
 
-    <form action="/search" method="post">
-        <p><input type="submit" value="Поиск"></p>
 
-        <p><input type="text" size="10" name="tag"></p>
-    </form>
+    <div class="infoTable">
+        <div class="infoBlock" id="block1">
+            <div class="header"></div>
+            <div class="info"></div>
+        </div>
+        <div class="infoBlock" id="block2">
+            <div class="header"></div>
+            <div class="info"></div>
+        </div>
+        <div class="infoBlock" id="block3">
+            <div class="header"></div>
+        </div>
+    </div>
 </div>
-
-<div class="infoTable">
-    <div class="infoBlock" id="block1">
-        <div class="header"></div>
-        <div class="info"></div>
-    </div>
-    <div class="infoBlock" id="block2">
-        <div class="header"></div>
-        <div class="info"></div>
-    </div>
-    <div class="infoBlock" id="block3">
-        <div class="header"></div>
-    </div>
-</div>
-
 </body>
 </html>

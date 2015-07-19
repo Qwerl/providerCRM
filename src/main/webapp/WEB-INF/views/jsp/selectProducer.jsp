@@ -7,91 +7,101 @@
 
 <head>
     <title>testTask</title>
-    <spring:url value="/resources/core/css/styles.css" var="coreCss"/>
+    <spring:url value="/resources/core/css/newStyles.css" var="coreCss"/>
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link type="text/css" href="${coreCss}" rel="stylesheet"/>
 </head>
 
 <body>
-<div class="sidebar">
+<div class="container">
 
-    <form action="/selectProvider" method="get">
-        <input type="submit" value="Поставщики"/>
-    </form>
-    <br/>
+    <div class="sidebar">
+        <div class="button-container">
+            <a href="/selectProvider">
+                <span>Поставщики</span>
+            </a>
+            <a href="/selectProducer" id="selected">
+                <span>Производители</span>
+            </a>
+            <a href="/search">
+                <span>Поиск</span>
+            </a>
 
-    <form action="/selectProducer" method="get">
-        <input type="submit" value="Производители"/>
-    </form>
-    <br/>
-
-    <form action="/search" method="post">
-        <p><input type="submit" value="Поиск"></p>
-
-        <p><input type="text" size="10" name="tag"></p>
-    </form>
-
-</div>
-<div class="infoTable">
-    <div class="infoBlock" id="block1">
-        <div class="header">
-            <p>Список производителей</p>
-        </div>
-        <div class="info">
-            <p>
-
-            <form action="/producer/add" method="get">
-                <input type="submit" value="Добавить"/>
+            <form class="search" action="/search" method="post">
+                <input name="tag" required>
+                <button type="submit">O</button>
             </form>
-            </p>
-            <c:forEach items="${producers}" var="producer" varStatus="producerStatus">
-                <p>
-                <form action="/selectProducer/<c:out value="${producer.id}"/>" method="get">
-                    <input type="submit" value="<c:out value="${producer.name}"/>">
-                </form>
-                </p>
-            </c:forEach>
         </div>
     </div>
 
-    <div class="infoBlock" id="block2">
-        <div class="header">
-            <p>Реквизиты</p>
+
+    <div class="infoTable">
+        <div class="infoBlock" id="block1">
+            <div class="header">
+                <p>Список производителей</p>
+            </div>
+            <div class="info">
+
+                <div class="button-container">
+                    <form action="/producer/add" method="get">
+                        <input type="submit" value="Добавить"/>
+                    </form>
+                    <br/>
+
+                    <c:forEach items="${producers}" var="producer">
+                        <a href="/selectProducer/<c:out value="${producer.id}"/>"
+                           <c:if test="${producer.id == producerInfo.id}">id="selected"</c:if>>
+                            <span><c:out value="${producer.name}"/></span>
+                        </a>
+                    </c:forEach>
+                </div>
+            </div>
         </div>
-        <div class="info">
-            <c:if test="${not empty producerInfo}">
-                <p>Данные по производителю:</p>
 
-                <p><c:out value="${producerInfo.name}"/></p>
+        <div class="infoBlock" id="block2">
+            <div class="header">
+                <p>Реквизиты</p>
+            </div>
+            <div class="info">
+                <c:if test="${not empty producerInfo}">
+                    <div class="textInfo">
+                        <div class="text-area">
+                            <p>Данные по производителю:</p><br/>
 
-                <p><c:out value="${producerInfo.address}"/></p>
+                            <p>Название:<br/>
+                                <c:out value="${producerInfo.name}"/>
+                            </p><br/>
 
-                <p><c:out value="${producerInfo.phoneNumber}"/></p>
+                            <p>Адрес офиса:<br/>
+                                <c:out value="${producerInfo.address}"/>
+                            </p><br/>
 
-                <p>
-
-                <form action="/producer/<c:out value="${producerInfo.id}"/>" method="get">
-                    <input type="submit" value="Показать полные данные">
-                </form>
-                </p>
-            </c:if>
+                            <p>Адрес склада:<br/>
+                                <c:out value="${producerInfo.phoneNumber}"/>
+                            </p><br/>
+                        </div>
+                        <div class="button-container">
+                            <a href="/producer/<c:out value="${producerInfo.id}"/>">
+                                <span>Показать полные данные</span>
+                            </a>
+                        </div>
+                    </div>
+                </c:if>
+            </div>
         </div>
-    </div>
 
-    <div class="infoBlock" id="block3">
-        <div class="header">
-            <p>Список поставщиков</p>
-        </div>
-        <div class="info">
-            <c:forEach items="${providerList}" var="provider" varStatus="productStatus">
-                <p>
-
-                <form action="/selectProvider/<c:out value="${provider.id}"/>" method="get">
-                    <input type="submit" value="<c:out value="${provider.name}"/>">
-                </form>
-                </p>
-            </c:forEach>
+        <div class="infoBlock" id="block3">
+            <div class="header">Список поставщиков</div>
+            <div class="info">
+                <div class="button-container">
+                    <c:forEach items="${providerList}" var="provider" varStatus="productStatus">
+                        <a href="/selectProvider/<c:out value="${provider.id}"/>">
+                            <span><c:out value="${provider.name}"/></span>
+                        </a>
+                    </c:forEach>
+                </div>
+            </div>
         </div>
     </div>
 </div>
