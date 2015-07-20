@@ -20,10 +20,8 @@ public class UniqueEmployeeNameValidator implements ConstraintValidator<UniqueEm
     @Override
     public boolean isValid(String employeeName, ConstraintValidatorContext constraintValidatorContext) {
         if (employeeRepository.findByFullName(employeeName) == null) {
-            System.out.println(employeeName);
             return true;
         } else {
-            System.out.println(employeeName);
             return false;
         }
     }
