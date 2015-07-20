@@ -1,10 +1,6 @@
 package ru.cg.providerCRM.entity;
 
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
-
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "EMPLOYEE")
@@ -15,27 +11,19 @@ public class Employee {
     @Column(name = "EMPLOYEE_ID")
     private Long id;
 
-    @Column(name = "FULL_NAME")
-    @NotBlank
+    @Column(name = "FULL_NAME", unique = true)
     private String fullName;
 
-    @Column(name = "EMAIL")
-    @NotBlank
-    @Email
+    @Column(name = "EMAIL", unique = true)
     private String email;
 
     @Column(name = "HOME_PHONE_NUMBER")
-    @NotBlank
-    @Size(min = 2, max = 20)
     private String homePhoneNumber;
 
     @Column(name = "WORK_PHONE_NUMBER")
-    @NotBlank
-    @Size(min = 2, max = 20)
     private String workPhoneNumber;
 
     @Column(name = "POSITION")
-    @NotBlank
     private String position;
 
     @ManyToOne

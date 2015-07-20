@@ -3,6 +3,7 @@ package ru.cg.providerCRM.web.form;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Employee;
+import ru.cg.providerCRM.validator.UniqueEmployeeName;
 
 import javax.validation.constraints.Size;
 
@@ -11,6 +12,7 @@ public class EmployeeForm {
     private Long id;
 
     @NotBlank
+    @UniqueEmployeeName
     private String fullName;
 
     @NotBlank
