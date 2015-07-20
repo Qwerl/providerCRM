@@ -1,7 +1,5 @@
 package ru.cg.providerCRM.entity;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +14,15 @@ public class Producer {
     private Long id;
 
     @Column(name = "NAME")
-    @NotBlank
     private String name;
 
     @Column(name = "ADDRESS")
-    @NotBlank
     private String address;
 
     @Column(name = "PHONE_NUMBER")
-    @NotBlank
     private String phoneNumber;
 
     @Column(name = "NOTE")
-    @NotBlank
     private String note;
 
     @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL,  orphanRemoval = true)

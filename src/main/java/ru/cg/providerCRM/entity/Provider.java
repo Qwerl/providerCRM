@@ -1,10 +1,6 @@
 package ru.cg.providerCRM.entity;
 
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,28 +14,18 @@ public class Provider {
     private Long id;
 
     @Column(name = "NAME")
-    @NotBlank
-    @Size(min = 1, max = 255)
     private String name;
 
     @Column(name = "ADDRESS")
-    @NotBlank
-    @Size(min = 1, max = 255)
     private String address;
 
     @Column(name = "PHONE_NUMBER")
-    @NotEmpty
-    @Size(min = 1, max = 255)
     private String phoneNumber;
 
     @Column(name = "STORAGE_ADDRESS")
-    @NotEmpty
-    @Size(min = 0, max = 255)
     private String storageAddress;
 
     @Column(name = "NOTE")
-    @NotEmpty
-    @Size(min = 0, max = 255)
     private String note;
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
