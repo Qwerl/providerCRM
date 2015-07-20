@@ -82,8 +82,9 @@ public class ProducerEditorController {
         Producer producer = producerService.getById(Long.parseLong(producerId));
         modelAndView.addObject("producerForm", new ProducerForm(producer));
         modelAndView.addObject("producerEditing", true);
-        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), producer.getTags()));
         modelAndView.addObject("otherProviders", ListUtils.subtract(providerService.getAllProviders(), producer.getProviders()));
+        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), producer.getTags()));
+
         addEmployees(modelAndView, producerId);
         return modelAndView;
     }
@@ -209,13 +210,11 @@ public class ProducerEditorController {
 
         @Override
         public void setAsText(String text) throws IllegalArgumentException {
-            System.out.println("sat");
             setValue(providerService.getByName(text));
         }
 
         @Override
         public String getAsText() {
-            System.out.println("gat");
             return ((Provider) getValue()).getName();
         }
 

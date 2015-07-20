@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import ru.cg.providerCRM.entity.Employee;
-import ru.cg.providerCRM.entity.Product;
-import ru.cg.providerCRM.entity.Provider;
-import ru.cg.providerCRM.entity.Tag;
+import ru.cg.providerCRM.entity.*;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProductService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
+import ru.cg.providerCRM.web.form.EmployeeForm;
 import ru.cg.providerCRM.web.form.ProviderForm;
 
 import javax.validation.Valid;
@@ -44,12 +42,8 @@ public class ProviderEditorController {
     @InitBinder
     public void initBinder(WebDataBinder b) {
         b.registerCustomEditor(Tag.class, new TagEditor());
+        b.registerCustomEditor(Product.class, new ProductEditor());
     }
-
-   @InitBinder
-   public void initProductBinder(WebDataBinder b) {
-       b.registerCustomEditor(Product.class, new ProductEditor());
-   }
 
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
     public ModelAndView displayProviderRegisterForm() {
@@ -76,8 +70,8 @@ public class ProviderEditorController {
     public ModelAndView providerFullInfo(@PathVariable("providerId") String providerId) {
         ModelAndView modelAndView = new ModelAndView("providerEditor");
         Provider provider = providerService.getById(Long.parseLong(providerId));
-        modelAndView.addObject("employees", provider.getEmployees());
-        modelAndView.addObject("provider", provider);
+        modelAndView.addObject("providerForm", new ProviderForm(provider));
+        addEmployees(modelAndView, providerId);
         return modelAndView;
     }
 
@@ -85,10 +79,11 @@ public class ProviderEditorController {
     public ModelAndView editProviderForm(@PathVariable("providerId") String providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
         Provider provider = providerService.getById(Long.parseLong(providerId));
+        modelAndView.addObject("providerForm", new ProviderForm(provider));
         modelAndView.addObject("providerEditing", true);
         modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
         modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
-        modelAndView.addObject("providerForm", new ProviderForm(provider));
+        addEmployees(modelAndView, providerId);
         return modelAndView;
     }
 
@@ -98,7 +93,7 @@ public class ProviderEditorController {
                                        BindingResult result) {
         providerForm.setId(Long.parseLong(providerId));
         if (result.hasErrors()) {
-            ModelAndView modelAndView = providerFullInfo(providerId);
+            ModelAndView modelAndView = new ModelAndView("providerEditor");
             modelAndView.addObject("providerEditing", true);
             if (providerForm.getProducts() == null){
                 providerForm.setProducts(ListUtils.EMPTY_LIST);
@@ -107,7 +102,7 @@ public class ProviderEditorController {
                 providerForm.setTags(ListUtils.EMPTY_LIST);
             }
             modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), providerForm.getTags()));
-
+            addEmployees(modelAndView, providerId);
             return modelAndView;
         } else {
             Provider provider = providerService.getById(Long.parseLong(providerId));
@@ -122,20 +117,21 @@ public class ProviderEditorController {
     public ModelAndView getPermissionToAddEmployeeToProvider(@PathVariable("providerId") String providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", true);
-        modelAndView.addObject("employee", new Employee());
+        modelAndView.addObject("employeeForm", new EmployeeForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.POST)
     public ModelAndView addEmployeeToProvider(@PathVariable("providerId") String providerId,
-                                              @Valid Employee validEmployee,
+                                              @Valid EmployeeForm employeeForm,
                                               BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = providerFullInfo(providerId);
             modelAndView.addObject("employeeWritePermission", true);
             return modelAndView;
         } else {
-            Employee employee = validEmployee;
+            Employee employee = new Employee();
+            employeeForm.fillEmployee(employee);
             employee.setProvider(providerService.getById(Long.parseLong(providerId)));
             employeeService.addEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
@@ -156,7 +152,7 @@ public class ProviderEditorController {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("editableEmployeeId", employeeId);
-        modelAndView.addObject("employee", employeeService.getById(Long.parseLong(employeeId)));
+        modelAndView.addObject("employeeForm", new EmployeeForm(employeeService.getById(Long.parseLong(employeeId))));
         return modelAndView;
     }
 
@@ -170,21 +166,27 @@ public class ProviderEditorController {
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId:.+}", method = RequestMethod.POST)
     public ModelAndView updateEmployee(@PathVariable("providerId") String providerId,
                                        @PathVariable("employeeId") String employeeId,
-                                       @Valid Employee validEmployee,
+                                       @Valid EmployeeForm employeeForm,
                                        BindingResult result) {
-        validEmployee.setId(Long.parseLong(employeeId));
+        employeeForm.setId(Long.parseLong(employeeId));
         if (result.hasErrors()) {
             ModelAndView modelAndView = providerFullInfo(providerId);
             modelAndView.addObject("employeeWritePermission", false);
             modelAndView.addObject("editableEmployeeId", employeeId);
-            modelAndView.addObject("employee", validEmployee);
             return modelAndView;
         } else {
-            Employee employee = validEmployee;
+            Employee employee = employeeService.getById(Long.parseLong(employeeId));
+            employeeForm.fillEmployee(employee);
+            employee.setId(Long.parseLong(employeeId));
             employee.setProvider(providerService.getById(Long.parseLong(providerId)));
             employeeService.updateEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
         }
+    }
+
+    private void addEmployees(ModelAndView modelAndView, String providerId) {
+        Provider provider = providerService.getById(Long.parseLong(providerId));
+        modelAndView.addObject("employees", provider.getEmployees());
     }
 
     //todo

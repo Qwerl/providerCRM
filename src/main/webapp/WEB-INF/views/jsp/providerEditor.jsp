@@ -22,7 +22,7 @@
 <div class="container">
 
     <div class="page-header">
-        <h2>${provider.name}</h2>
+        <h2>${providerForm.name}</h2>
     </div>
 
     <div class="employee table">
@@ -43,9 +43,9 @@
                 <tr>
                     <c:choose>
                         <%-- Режим редактирования содрудника с заданным ID --%>
-                        <c:when test="${editableEmployeeId == currentEmployee.id}">
-                            <form:form action="/provider/${provider.id}/edit/employee/${currentEmployee.id}"
-                                       method="post" commandName="employee">
+                        <c:when test="${employeeForm.id == currentEmployee.id}">
+                            <form:form action="/provider/${providerForm.id}/edit/employee/${currentEmployee.id}"
+                                       method="post" commandName="employeeForm">
                                 <td>
                                     <form:input class="form-control"
                                                 path="position"/>
@@ -89,11 +89,11 @@
                             <td>${currentEmployee.homePhoneNumber}</td>
                             <td>
                                 <div>
-                                    <form action="${pageContext.request.contextPath}/provider/${provider.id}/edit/employee/${currentEmployee.id}"
+                                    <form action="${pageContext.request.contextPath}/provider/${providerForm.id}/edit/employee/${currentEmployee.id}"
                                           method="get">
                                         <button type="submit" class="btn btn-primary">Изменить</button>
                                     </form>
-                                    <form action="${pageContext.request.contextPath}/provider/${provider.id}/edit/employee/${currentEmployee.id}/delete"
+                                    <form action="${pageContext.request.contextPath}/provider/${providerForm.id}/edit/employee/${currentEmployee.id}/delete"
                                           method="post">
                                         <button type="submit" class="btn btn-primary">Удалить</button>
                                     </form>
@@ -114,7 +114,7 @@
             </c:forEach>
             <%-- Добавление нового сотрудника --%>
             <c:if test="${employeeWritePermission}">
-                <form:form class="form-horizontal" method="post" action='' commandName="employee">
+                <form:form class="form-horizontal" method="post" action='' commandName="employeeForm">
                     <tr>
                         <td>
                             <form:input class="form-control" path="position" placeholder="Введите должность"/>
@@ -156,13 +156,13 @@
         <c:if test="${!employeeWritePermission}">
             <ul class="nav nav-pills navbar-left">
                 <li class="active">
-                    <a href="/provider/${provider.id}/edit/addEmployee">
+                    <a href="/provider/${providerForm.id}/edit/addEmployee">
                         Добавить сотрудника
                     </a>
                 </li>
                 <c:if test="${!employeesEditing}">
                     <li class="active">
-                        <a href="/provider/${provider.id}/edit/employee">
+                        <a href="/provider/${providerForm.id}/edit/employee">
                             Редактировать сотрудников
                         </a>
                     </li>
@@ -251,28 +251,28 @@
                     <c:otherwise>
                         <tr>
                             <td>Поставщик</td>
-                            <td>${provider.name}</td>
+                            <td>${providerForm.name}</td>
                         </tr>
                         <tr>
                             <td>Адрес офиса</td>
-                            <td>${provider.address}</td>
+                            <td>${providerForm.address}</td>
                         </tr>
                         <tr>
                             <td>Адрес склада</td>
-                            <td>${provider.storageAddress}</td>
+                            <td>${providerForm.storageAddress}</td>
                         </tr>
                         <tr>
                             <td>Общий телефон</td>
-                            <td>${provider.phoneNumber}</td>
+                            <td>${providerForm.phoneNumber}</td>
                         </tr>
                         <tr>
                             <td>Примечания</td>
-                            <td>${provider.note}</td>
+                            <td>${providerForm.note}</td>
                         </tr>
                         <tr>
                             <td>Поставляемое оборудование</td>
                             <td>
-                                <c:forEach items="${provider.products}" var="product">
+                                <c:forEach items="${providerForm.products}" var="product">
                                     <li class="active">
                                         <a href="${pageContext.request.contextPath}/product/${product.name}">
                                             <c:out value="${product.name}"/></a>
@@ -283,7 +283,7 @@
                         <tr>
                             <td>Теги</td>
                             <td>
-                                <c:forEach items="${provider.tags}" var="tag">
+                                <c:forEach items="${providerForm.tags}" var="tag">
                                     <li class="active">
                                         <a href="${pageContext.request.contextPath}/search/${tag.tagText}">
                                             <c:out value="${tag.tagText}"/></a>
@@ -305,13 +305,13 @@
                     </c:when>
                     <c:otherwise>
                         <li class="active">
-                            <a href="${pageContext.request.contextPath}/provider/${provider.id}/edit">
+                            <a href="${pageContext.request.contextPath}/provider/${providerForm.id}/edit">
                                 Редактировать
                             </a>
 
                         </li>
                         <li class="active">
-                            <a href="${pageContext.request.contextPath}/selectProvider/${provider.id}">
+                            <a href="${pageContext.request.contextPath}/selectProvider/${providerForm.id}">
                                 Отмена
                             </a>
                         </li>
