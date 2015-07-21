@@ -21,7 +21,7 @@
 <body>
 
 <div class="container">
-    <form:form class="form-horizontal" method="post" commandName="producer" action=''>
+    <form:form class="form-horizontal" method="post" commandName="producerForm" action=''>
         <h2>Создание нового производителя</h2>
         <table class="table table-striped">
             <tbody>

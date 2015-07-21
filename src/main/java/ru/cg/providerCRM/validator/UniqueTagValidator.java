@@ -20,6 +20,10 @@ public class UniqueTagValidator implements ConstraintValidator<UniqueTag, String
 
     @Override
     public boolean isValid(String tagText, ConstraintValidatorContext context) {
-        return tagService.getByName(tagText) == null;
+        try {
+            return tagService.getByName(tagText) == null;
+        } catch (Exception e) {
+            return true;
+        }
     }
 }

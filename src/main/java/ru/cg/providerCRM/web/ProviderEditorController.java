@@ -49,18 +49,19 @@ public class ProviderEditorController {
     public ModelAndView displayProviderRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProvider");
         modelAndView.addObject("tags", tagService.getAllTags());
-        modelAndView.addObject("provider", new Provider());
+        modelAndView.addObject("providerForm", new ProviderForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/add", method = RequestMethod.POST)
-    public ModelAndView addNewProvider(@Valid Provider validProvider, BindingResult result) {
+    public ModelAndView addNewProvider(@Valid ProviderForm providerForm, BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("addNewProvider");
             modelAndView.addObject("tags", tagService.getAllTags());
             return modelAndView;
         } else {
-            Provider provider = validProvider;
+            Provider provider = new Provider();
+            providerForm.fillProvider(provider);
             providerService.addProvider(provider);
             return new ModelAndView("redirect:/provider/" + provider.getId());
         }

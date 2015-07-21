@@ -21,8 +21,7 @@
 <body>
 
 <div class="container">
-    <form:form class="form-horizontal" method="post" commandName="provider" action=''>
-        <form:errors path="*" cssClass="errorblock" element="div"/>
+    <form:form class="form-horizontal" method="post" commandName="providerForm" action=''>
         <h2>Создание нового поставщика</h2>
         <table class="table table-striped">
             <tbody>

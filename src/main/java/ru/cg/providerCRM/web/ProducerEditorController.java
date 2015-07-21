@@ -49,19 +49,20 @@ public class ProducerEditorController {
     public ModelAndView displayProducerRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProducer");
         modelAndView.addObject("tags", tagService.getAllTags());
-        modelAndView.addObject("producer", new Producer());
+        modelAndView.addObject("producerForm", new ProducerForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/producer/add", method = RequestMethod.POST)
-    public ModelAndView addNewProducer(@Valid Producer validProducer, BindingResult result) {
+    public ModelAndView addNewProducer(@Valid ProducerForm producerForm, BindingResult result) {
 
         if (result.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("addNewProducer");
             modelAndView.addObject("tags", tagService.getAllTags());
             return modelAndView;
         } else {
-            Producer producer = validProducer;
+            Producer producer = new Producer();
+            producerForm.fillProducer(producer);
             producerService.addProducer(producer);
             return new ModelAndView("redirect:/producer/" + producer.getId());
         }

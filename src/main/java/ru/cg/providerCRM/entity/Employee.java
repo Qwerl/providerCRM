@@ -11,10 +11,10 @@ public class Employee {
     @Column(name = "EMPLOYEE_ID")
     private Long id;
 
-    @Column(name = "FULL_NAME", unique = true)
+    @Column(name = "FULL_NAME")
     private String fullName;
 
-    @Column(name = "EMAIL", unique = true)
+    @Column(name = "EMAIL")
     private String email;
 
     @Column(name = "HOME_PHONE_NUMBER")

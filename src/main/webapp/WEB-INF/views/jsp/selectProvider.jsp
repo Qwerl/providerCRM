@@ -31,7 +31,7 @@
 
             <form class="search" action="/search" method="post">
                 <input name="tag" required>
-                <button type="submit">O</button>
+                <button type="submit"></button>
             </form>
         </div>
     </div>
