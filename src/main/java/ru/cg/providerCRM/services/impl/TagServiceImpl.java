@@ -35,7 +35,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag getByName(String name) {
-        return tagRepository.findByTagText(name);
+        return tagRepository.findByTagTextContainingIgnoreCase(name).get(0);
     }
 
     @Override

@@ -5,6 +5,7 @@ import ru.cg.providerCRM.entity.Producer;
 import ru.cg.providerCRM.entity.Provider;
 import ru.cg.providerCRM.entity.Tag;
 
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,16 +13,20 @@ public class ProducerForm {
 
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Название не должно быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Адрес не должно быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String address;
 
-    @NotBlank
+    @NotBlank(message = "Общий телефон не должен быть пустым")
+    @Size(min = 2, max = 20, message = "Длинна должна быть больше 2 символов, но не больше 20")
     private String phoneNumber;
 
-    @NotBlank
+    @NotBlank(message = "Общий телефон не должен быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String note;
 
     private List<Provider> providers = new ArrayList<Provider>();

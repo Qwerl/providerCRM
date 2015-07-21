@@ -132,9 +132,15 @@ table {
     margin: 10px 0;
 }
 
+.info .button-container #special {
+    margin: 5px 0;
+    background: cornflowerblue;
+}
+
 .info .button-container a {
     margin: 5px 0;
 }
+
 
 .textInfo .button-container {
     vertical-align:bottom;
@@ -153,6 +159,11 @@ table {
     top: 0;
 }
 
+.textInfo .button-container #delete{
+    background: #c0504d;
+    border: 3px solid #8c3e3c;
+}
+
 .textInfo .button-container a {
     margin: 10px 10%;
     width: 80%;
@@ -160,6 +171,7 @@ table {
     background: #4f81bd;
     border: 3px solid #385d8a;
 }
+
 
 .sidebar .button-container #selected {
     background: #c0504d;

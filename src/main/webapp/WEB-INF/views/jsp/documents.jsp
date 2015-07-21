@@ -101,7 +101,7 @@
                     <p>
                         Файл для загрузки: <input style="width: 178px;" type="file" name="file">
                         <br/><br/>
-                        Название файла: <input type="text" name="name">
+                        Название файла: <input type="text" name="name" required>
                         <br/><br/>
                         <input type="submit" value="Загрузить">
                     </p>

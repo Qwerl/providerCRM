@@ -151,8 +151,13 @@ public class MainController {
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public ModelAndView search(@RequestParam(value = "tag") String tagText) {
         ModelAndView modelAndView = new ModelAndView("search");
-        System.out.println(tagText);
-        Tag tag = tagService.getByName(tagText);
+        Tag tag;
+        try {
+            tag = tagService.getByName(tagText);
+        } catch (Exception e) {
+            /* todo: обработать корректно */
+            return new ModelAndView("search");
+        }
 
         Iterable<Provider> providers = providerService.getProvidersContainsTag(tag);
         modelAndView.addObject("providers", providers);

@@ -3,7 +3,6 @@ package ru.cg.providerCRM.web.form;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Employee;
-import ru.cg.providerCRM.validator.UniqueEmployeeName;
 
 import javax.validation.constraints.Size;
 
@@ -11,23 +10,25 @@ public class EmployeeForm {
 
     private Long id;
 
-    @NotBlank
-    @UniqueEmployeeName
+    @NotBlank(message = "ФИО не должно быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
+//    @UniqueEmployeeName
     private String fullName;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email не должен быть путым")
+    @Email(message = "Email введен не корректно")
     private String email;
 
-    @NotBlank
-    @Size(min = 2, max = 20)
+    @NotBlank(message = "Email не должен быть путым")
+    @Size(min = 2, max = 20, message = "Длинна должна быть больше 2 символов, но не больше 20")
     private String homePhoneNumber;
 
     @NotBlank
-    @Size(min = 2, max = 20)
+    @Size(min = 2, max = 20, message = "Длинна должна быть больше 2 символов, но не больше 20")
     private String workPhoneNumber;
 
     @NotBlank
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String position;
 
     public EmployeeForm() {

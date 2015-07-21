@@ -12,24 +12,24 @@ public class ProviderForm {
 
     private Long id;
 
-    @NotBlank
-    @Size(min = 1, max = 255)
+    @NotBlank(message = "Название не должно быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String name;
 
-    @NotBlank
-    @Size(min = 1, max = 255)
+    @NotBlank(message = "Адрес офиса не должен быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String address;
 
-    @NotEmpty
-    @Size(min = 1, max = 255)
+    @NotEmpty(message = "Общий телефон не должен быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String phoneNumber;
 
-    @NotEmpty
-    @Size(min = 0, max = 255)
+    @NotEmpty(message = "Адрес склада не должен быть пустым")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String storageAddress;
 
-    @NotEmpty
-    @Size(min = 0, max = 255)
+    @NotEmpty(message = "Примечания не должны быть пустыми")
+    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
     private String note;
 
     private List<Tag> tags = new ArrayList<Tag>();
