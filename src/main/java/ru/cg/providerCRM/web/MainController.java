@@ -151,20 +151,12 @@ public class MainController {
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public ModelAndView search(@RequestParam(value = "tag") String tagText) {
         ModelAndView modelAndView = new ModelAndView("search");
-        Tag tag;
-        try {
-            tag = tagService.getByName(tagText);
-        } catch (Exception e) {
-            /* todo: обработать корректно */
-            return new ModelAndView("search");
-        }
 
-        Iterable<Provider> providers = providerService.getProvidersContainsTag(tag);
+        Iterable<Provider> providers = providerService.getProviderBySpecificText(tagText);
         modelAndView.addObject("providers", providers);
 
-        producerService.getAllProducers();
-        Iterable<Producer> producers = producerService.getProducersContainsTag(tag);
-        modelAndView.addObject("producers", producers);
+//        Iterable<Producer> producers = producerService.getProducersContainsTag(tag);
+//        modelAndView.addObject("producers", producers);
 
         modelAndView.addObject("currentTag", tagText);
         return modelAndView;

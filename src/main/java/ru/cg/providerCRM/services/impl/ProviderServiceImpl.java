@@ -1,5 +1,6 @@
 package ru.cg.providerCRM.services.impl;
 
+import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.cg.providerCRM.entity.*;
@@ -82,5 +83,18 @@ public class ProviderServiceImpl implements ProviderService {
         Document document = documentRepository.saveAndFlush(newDocument);
         document.setProvider(provider);
         documentRepository.saveAndFlush(document);
+    }
+
+    @Override
+    public List<Provider> getProviderBySpecificText(String text) {
+        String textToSearch = "%" + text + "%";
+
+        List providers = providerRepository.findDistinctProviderByNameLikeIgnoreCaseOrNoteLikeIgnoreCaseOrAddressLikeIgnoreCaseOrStorageAddressLikeIgnoreCaseOrProductsNameLikeIgnoreCaseOrEmployeesFullNameLikeOrDocumentsNameLikeIgnoreCase(textToSearch, textToSearch, textToSearch, textToSearch, textToSearch, textToSearch, textToSearch);
+
+        if (providers == null) {
+            return ListUtils.EMPTY_LIST;
+        } else {
+            return providers;
+        }
     }
 }
