@@ -16,7 +16,8 @@ import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProducerService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
-import ru.cg.providerCRM.web.form.EmployeeForm;
+import ru.cg.providerCRM.web.form.EmployeeEditForm;
+import ru.cg.providerCRM.web.form.EmployeeRegistrationForm;
 import ru.cg.providerCRM.web.form.ProducerForm;
 
 import javax.validation.Valid;
@@ -120,13 +121,13 @@ public class ProducerEditorController {
     public ModelAndView getPermissionToAddEmployeeToProducer(@PathVariable("producerId") String producerId) {
         ModelAndView modelAndView = producerFullInfo(producerId);
         modelAndView.addObject("employeeWritePermission", true);
-        modelAndView.addObject("employeeForm", new EmployeeForm());
+        modelAndView.addObject("employeeForm", new EmployeeRegistrationForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "producer/{producerId:.+}/edit/addEmployee", method = RequestMethod.POST)
     public ModelAndView addEmployeeToProducer(@PathVariable("producerId") String producerId,
-                                              @Valid EmployeeForm employeeForm,
+                                              @ModelAttribute("employeeForm")  @Valid EmployeeRegistrationForm employeeRegistrationForm,
                                               BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = producerFullInfo(producerId);
@@ -134,7 +135,7 @@ public class ProducerEditorController {
             return modelAndView;
         } else {
             Employee employee = new Employee();
-            employeeForm.fillEmployee(employee);
+            employeeRegistrationForm.fillEmployee(employee);
             employee.setProducer(producerService.getById(Long.parseLong(producerId)));
             employeeService.addEmployee(employee);
             return new ModelAndView("redirect:/producer/" + producerId);
@@ -155,7 +156,7 @@ public class ProducerEditorController {
         ModelAndView modelAndView = producerFullInfo(producerId);
         modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("editableEmployeeId", employeeId);
-        modelAndView.addObject("employeeForm", new EmployeeForm(employeeService.getById(Long.parseLong(employeeId))));
+        modelAndView.addObject("employeeForm", new EmployeeEditForm(employeeService.getById(Long.parseLong(employeeId))));
         return modelAndView;
     }
 
@@ -169,7 +170,7 @@ public class ProducerEditorController {
     @RequestMapping(value = "/producer/{producerId:.+}/edit/employee/{employeeId}", method = RequestMethod.POST)
     public ModelAndView updateEmployee(@PathVariable("producerId") String producerId,
                                        @PathVariable("employeeId") String employeeId,
-                                       @Valid EmployeeForm employeeForm,
+                                       @ModelAttribute("employeeForm") @Valid EmployeeEditForm employeeForm,
                                        BindingResult result) {
         employeeForm.setId(Long.parseLong(employeeId));
         if (result.hasErrors()) {
@@ -178,9 +179,7 @@ public class ProducerEditorController {
             modelAndView.addObject("editableEmployeeId", employeeId);
             return modelAndView;
         } else {
-            Employee employee = employeeService.getById(Long.parseLong(employeeId));
-            employeeForm.fillEmployee(employee);
-            employee.setId(Long.parseLong(employeeId));
+            Employee employee = employeeForm.getEmployee();
             employee.setProducer(producerService.getById(Long.parseLong(producerId)));
             employeeService.updateEmployee(employee);
             return new ModelAndView("redirect:/producer/" + producerId);

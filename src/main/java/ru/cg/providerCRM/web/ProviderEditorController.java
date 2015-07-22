@@ -6,17 +6,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.*;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProductService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
-import ru.cg.providerCRM.web.form.EmployeeForm;
+import ru.cg.providerCRM.web.form.EmployeeEditForm;
+import ru.cg.providerCRM.web.form.EmployeeRegistrationForm;
 import ru.cg.providerCRM.web.form.ProviderForm;
 
 import javax.validation.Valid;
@@ -118,13 +116,13 @@ public class ProviderEditorController {
     public ModelAndView getPermissionToAddEmployeeToProvider(@PathVariable("providerId") String providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", true);
-        modelAndView.addObject("employeeForm", new EmployeeForm());
+        modelAndView.addObject("employeeForm", new EmployeeRegistrationForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.POST)
     public ModelAndView addEmployeeToProvider(@PathVariable("providerId") String providerId,
-                                              @Valid EmployeeForm employeeForm,
+                                              @ModelAttribute("employeeForm") @Valid EmployeeRegistrationForm employeeRegistrationForm,
                                               BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = providerFullInfo(providerId);
@@ -132,7 +130,7 @@ public class ProviderEditorController {
             return modelAndView;
         } else {
             Employee employee = new Employee();
-            employeeForm.fillEmployee(employee);
+            employeeRegistrationForm.fillEmployee(employee);
             employee.setProvider(providerService.getById(Long.parseLong(providerId)));
             employeeService.addEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
@@ -153,7 +151,7 @@ public class ProviderEditorController {
         ModelAndView modelAndView = providerFullInfo(providerId);
         modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("editableEmployeeId", employeeId);
-        modelAndView.addObject("employeeForm", new EmployeeForm(employeeService.getById(Long.parseLong(employeeId))));
+        modelAndView.addObject("employeeForm", new EmployeeEditForm(employeeService.getById(Long.parseLong(employeeId))));
         return modelAndView;
     }
 
@@ -167,7 +165,7 @@ public class ProviderEditorController {
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId:.+}", method = RequestMethod.POST)
     public ModelAndView updateEmployee(@PathVariable("providerId") String providerId,
                                        @PathVariable("employeeId") String employeeId,
-                                       @Valid EmployeeForm employeeForm,
+                                       @ModelAttribute("employeeForm") @Valid EmployeeEditForm employeeForm,
                                        BindingResult result) {
         employeeForm.setId(Long.parseLong(employeeId));
         if (result.hasErrors()) {
@@ -176,9 +174,7 @@ public class ProviderEditorController {
             modelAndView.addObject("editableEmployeeId", employeeId);
             return modelAndView;
         } else {
-            Employee employee = employeeService.getById(Long.parseLong(employeeId));
-            employeeForm.fillEmployee(employee);
-            employee.setId(Long.parseLong(employeeId));
+            Employee employee = employeeForm.getEmployee();
             employee.setProvider(providerService.getById(Long.parseLong(providerId)));
             employeeService.updateEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
