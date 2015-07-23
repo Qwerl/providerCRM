@@ -1,5 +1,6 @@
 package ru.cg.providerCRM.services.impl;
 
+import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.cg.providerCRM.entity.*;
@@ -71,5 +72,18 @@ public class ProducerServiceImpl implements ProducerService {
     public void deleteEmployee(Long employeeId, Long producerId) {
         Employee employee = employeeService.getById(employeeId);
         employeeService.deleteEmployee(employee);
+    }
+
+    @Override
+    public List<Producer> getProducerBySpecificText(String text) {
+        String textToSearch = "%" + text + "%";
+
+        List<Producer> producers = producerRepository.findDistinctProducerByNameLikeIgnoreCaseOrAddressLikeIgnoreCaseOrNoteLikeIgnoreCaseOrEmployeesFullNameLikeIgnoreCaseOrProvidersNameLikeIgnoreCase(textToSearch,textToSearch,textToSearch,textToSearch,textToSearch);
+
+        if (producers == null) {
+            return ListUtils.EMPTY_LIST;
+        } else {
+            return producers;
+        }
     }
 }

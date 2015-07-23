@@ -155,8 +155,8 @@ public class MainController {
         Iterable<Provider> providers = providerService.getProviderBySpecificText(tagText);
         modelAndView.addObject("providers", providers);
 
-//        Iterable<Producer> producers = producerService.getProducersContainsTag(tag);
-//        modelAndView.addObject("producers", producers);
+        Iterable<Producer> producers = producerService.getProducerBySpecificText(tagText);
+        modelAndView.addObject("producers", producers);
 
         modelAndView.addObject("currentTag", tagText);
         return modelAndView;
