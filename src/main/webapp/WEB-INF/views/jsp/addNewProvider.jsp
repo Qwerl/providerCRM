@@ -50,11 +50,11 @@
                 <td><form:textarea rows="5" class="form-control" placeholder="Введите примечания" path="note" required="required"/></td>
                 <td><form:errors path="note" cssClass="error"/></td>
             </tr>
-            <tr>
-                <td>Теги</td>
-                <td><form:checkboxes path="tags" items="${tags}"/></td>
-                <td><form:errors path="tags" cssClass="error"/></td>
-            </tr>
+            <%--<tr>--%>
+                <%--<td>Теги</td>--%>
+                <%--<td><form:checkboxes path="tags" items="${tags}"/></td>--%>
+                <%--<td><form:errors path="tags" cssClass="error"/></td>--%>
+            <%--</tr>--%>
             </tbody>
         </table>
         <div class="form-actions">

@@ -27,18 +27,34 @@
 
     <div class="employee table">
         <table class="table table-striped">
+            <c:if test="${editingMode}">
+                <ul class="nav nav-pills navbar-right">
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}/edit/addEmployee">
+                            Добавить сотрудника
+                        </a>
+                    </li>
+                    <c:if test="${not empty employees}">
+                        <li class="active">
+                            <a href="/provider/${providerForm.id}/edit/employee">
+                                Редактировать сотрудников
+                            </a>
+                        </li>
+                    </c:if>
+                </ul>
+            </c:if>
+            <h3>Информация о сотрудниках</h3>
             <thead>
             <tr>
                 <th>Должность</th>
-                <th>Фио</th>
+                <th>ФИО</th>
                 <th>Email</th>
                 <th>Рабочий телефон</th>
                 <th>Мобильный телефон</th>
-                <th></th>
+                <th/>
             </tr>
             </thead>
             <tbody>
-
             <c:forEach items="${employees}" var="currentEmployee">
                 <tr>
                     <c:choose>
@@ -66,7 +82,6 @@
                                                 path="workPhoneNumber"/>
                                     <form:errors path="workPhoneNumber" cssClass="error"/>
                                 </td>
-
                                 <td>
                                     <form:input class="form-control"
                                                 path="homePhoneNumber"/>
@@ -89,11 +104,11 @@
                             <td>${currentEmployee.homePhoneNumber}</td>
                             <td>
                                 <div>
-                                    <form action="${pageContext.request.contextPath}/provider/${providerForm.id}/edit/employee/${currentEmployee.id}"
+                                    <form action="/provider/${providerForm.id}/edit/employee/${currentEmployee.id}"
                                           method="get">
                                         <button type="submit" class="btn btn-primary">Изменить</button>
                                     </form>
-                                    <form action="${pageContext.request.contextPath}/provider/${providerForm.id}/edit/employee/${currentEmployee.id}/delete"
+                                    <form action="/provider/${providerForm.id}/edit/employee/${currentEmployee.id}/delete"
                                           method="post">
                                         <button type="submit" class="btn btn-primary">Удалить</button>
                                     </form>
@@ -113,7 +128,7 @@
                 </tr>
             </c:forEach>
             <%-- Добавление нового сотрудника --%>
-            <c:if test="${employeeWritePermission}">
+            <c:if test="${employeeAddingMode}">
                 <form:form class="form-horizontal" method="post" action='' commandName="employeeForm">
                     <tr>
                         <td>
@@ -137,13 +152,10 @@
                             <form:input class="form-control" path="homePhoneNumber" placeholder="Введите Моб. телефон"/>
                             <form:errors path="homePhoneNumber" cssClass="error"/>
                         </td>
+                        <td/>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
+                        <td colspan="6" align="right">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                             <button type="button" onclick="history.back()" class="btn">Отменить</button>
                         </td>
@@ -152,99 +164,57 @@
             </c:if>
             </tbody>
         </table>
-        <%-- Выводить ли кнопку "добавить сотрудника"--%>
-        <c:if test="${!employeeWritePermission}">
-            <ul class="nav nav-pills navbar-left">
-                <li class="active">
-                    <a href="/provider/${providerForm.id}/edit/addEmployee">
-                        Добавить сотрудника
-                    </a>
-                </li>
-                <c:if test="${!employeesEditing}">
-                    <li class="active">
-                        <a href="/provider/${providerForm.id}/edit/employee">
-                            Редактировать сотрудников
-                        </a>
-                    </li>
-                </c:if>
-            </ul>
-        </c:if>
-        <br/>
     </div>
 
     <div class="provider table">
-        <br/>
-        <form:form action="${pageContext.request.contextPath}/provider/${providerForm.id}/edit" method="post"
-                   commandName="providerForm">
+        <form:form action="/provider/${providerForm.id}/edit/info" method="post" commandName="providerForm">
+            <ul class="nav nav-pills navbar-right">
+                <c:choose>
+                    <c:when test="${editingMode}">
+                        <li class="active">
+                            <a href="/provider/${providerForm.id}/edit/info">
+                                Редактировать информацию о поставщике
+                            </a>
+                        </li>
+                    </c:when>
+                    <c:when test="${providerEditing}">
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                            <button type="button" onclick="history.back()" class="btn">Отменить</button>
+                        </div>
+                    </c:when>
+                </c:choose>
+            </ul>
             <table class="table table-striped">
+                <h3>Информация о поставщике</h3>
                 <tbody>
                 <c:choose>
                     <%-- Режим редактирования --%>
                     <c:when test="${providerEditing}">
                         <tr>
                             <td>Поставщик</td>
-                            <td>
-                                <form:input class="form-control" path="name"/>
-                            </td>
-                            <td>
-                                <form:errors path="name" cssClass="error"/>
-                            </td>
+                            <td><form:input class="form-control" path="name"/></td>
+                            <td><form:errors path="name" cssClass="error"/></td>
                         </tr>
                         <tr>
                             <td>Адрес офиса</td>
-                            <td>
-                                <form:input class="form-control" path="address"/>
-                            </td>
-                            <td>
-                                <form:errors path="address" cssClass="error"/>
-                            </td>
+                            <td><form:input class="form-control" path="address"/></td>
+                            <td><form:errors path="address" cssClass="error"/></td>
                         </tr>
                         <tr>
                             <td>Адрес склада</td>
-                            <td>
-                                <form:input class="form-control" path="storageAddress"/>
-                            </td>
-                            <td>
-                                <form:errors path="storageAddress" cssClass="error"/>
-                            </td>
+                            <td><form:input class="form-control" path="storageAddress"/></td>
+                            <td><form:errors path="storageAddress" cssClass="error"/></td>
                         </tr>
                         <tr>
                             <td>Общий телефон</td>
-                            <td>
-                                <form:input class="form-control" path="phoneNumber"/>
-                            </td>
-                            <td>
-                                <form:errors path="phoneNumber" cssClass="error"/>
-                            </td>
+                            <td><form:input class="form-control" path="phoneNumber"/></td>
+                            <td><form:errors path="phoneNumber" cssClass="error"/></td>
                         </tr>
                         <tr>
                             <td>Примечания</td>
-                            <td>
-                                <form:textarea rows="5" class="form-control" path="note"></form:textarea>
-                            </td>
-                            <td>
-                                <form:errors path="note" cssClass="error"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Поставляемое оборудование</td>
-                            <td>
-                                <form:checkboxes path="products" items="${providerForm.products}" checked="checked"/>
-                                <form:checkboxes path="products" items="${otherProducts}"/>
-                            </td>
-                            <td>
-                                <form:errors path="products" cssClass="error"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Теги</td>
-                            <td>
-                                <form:checkboxes path="tags" items="${providerForm.tags}" checked="checked"/>
-                                <form:checkboxes path="tags" items="${otherTags}"/>
-                            </td>
-                            <td>
-                                <form:errors path="tags" cssClass="error"/>
-                            </td>
+                            <td><form:textarea rows="5" class="form-control" path="note"/></td>
+                            <td><form:errors path="note" cssClass="error"/></td>
                         </tr>
                     </c:when>
                     <%-- Режим просмотра --%>
@@ -269,56 +239,75 @@
                             <td>Примечания</td>
                             <td>${providerForm.note}</td>
                         </tr>
-                        <tr>
-                            <td>Поставляемое оборудование</td>
-                            <td>
-                                <c:forEach items="${providerForm.products}" var="product">
-                                    <li class="active">
-                                        <a href="${pageContext.request.contextPath}/product/${product.name}">
-                                            <c:out value="${product.name}"/></a>
-                                    </li>
-                                </c:forEach>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Теги</td>
-                            <td>
-                                <c:forEach items="${providerForm.tags}" var="tag">
-                                    <li class="active">
-                                        <a href="${pageContext.request.contextPath}/search/${tag.tagText}">
-                                            <c:out value="${tag.tagText}"/></a>
-                                    </li>
-                                </c:forEach>
-                            </td>
-                        </tr>
                     </c:otherwise>
                 </c:choose>
                 </tbody>
             </table>
-            <ul class="nav nav-pills navbar-right">
-                <c:choose>
-                    <c:when test="${providerEditing}">
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Сохранить</button>
-                            <button type="button" onclick="history.back()" class="btn">Отменить</button>
-                        </div>
-                    </c:when>
-                    <c:otherwise>
-                        <li class="active">
-                            <a href="${pageContext.request.contextPath}/provider/${providerForm.id}/edit">
-                                Редактировать
-                            </a>
-
-                        </li>
-                        <li class="active">
-                            <a href="${pageContext.request.contextPath}/selectProvider/${providerForm.id}">
-                                Отмена
-                            </a>
-                        </li>
-                    </c:otherwise>
-                </c:choose>
-            </ul>
         </form:form>
+    </div>
+
+    <div class="product table">
+        <table class="table table-striped">
+            <%-- Добавить кнопки, если в режиме редактирования --%>
+            <c:if test="${editingMode}">
+                <ul class="nav nav-pills navbar-right">
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}/edit/products/add">
+                            Привязать оборудование
+                        </a>
+                    </li>
+                    <li class="active">
+                            <%-- TODO: тут должна быть кнопка открывающая модальное окно для создания нового продукта --%>
+                        <a href="/products/addNew">
+                            Новое оборудование
+                        </a>
+                    </li>
+                </ul>
+            </c:if>
+
+            <h3>Поставляемое оборудование</h3>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Наименование</th>
+                <th>Комментарий</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${products}" var="product">
+                <tr>
+                    <td><a href="/product/${product.id}"><c:out value="${product.id}"/></a></td>
+                    <td><c:out value="${product.name}"/></td>
+                    <td><c:out value="${product.note}"/></td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="controls-pane">
+        <ul class="nav nav-pills navbar-right">
+            <c:choose>
+                <c:when test="${editingMode}">
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}">Отмена</a>
+                    </li>
+                </c:when>
+                <c:when test="${providerEditing || employeesEditing || employeeAddingMode || (editableEmployeeId!=null)}">
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}">Отмена</a>
+                    </li>
+                </c:when>
+                <c:otherwise>
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}/edit">Редактировать</a>
+                    </li>
+                    <li class="active">
+                        <a href="/selectProvider/${providerForm.id}">Вернуться</a>
+                    </li>
+                </c:otherwise>
+            </c:choose>
+        </ul>
     </div>
 
 </div>

@@ -14,7 +14,7 @@ public class EmployeeEditForm {
     private Long id;
 
     @NotBlank(message = "ФИО не должно быть пустым")
-    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
+    @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String fullName;
 
     @NotBlank(message = "Email не должен быть путым")
@@ -22,15 +22,15 @@ public class EmployeeEditForm {
     private String email;
 
     @NotBlank(message = "Мобильный телефон не должен быть путым")
-    @Size(min = 2, max = 20, message = "Длинна должна быть больше 2 символов, но не больше 20")
+    @Size(min = 2, max = 20, message = "Длина должна быть больше 2 символов, но не больше 20")
     private String homePhoneNumber;
 
     @NotBlank(message = "Рабочий телефон не должен быть путым")
-    @Size(min = 2, max = 20, message = "Длинна должна быть больше 2 символов, но не больше 20")
+    @Size(min = 2, max = 20, message = "Длина должна быть больше 2 символов, но не больше 20")
     private String workPhoneNumber;
 
     @NotBlank(message = "Должность не должена быть путой")
-    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
+    @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String position;
 
     public EmployeeEditForm() {

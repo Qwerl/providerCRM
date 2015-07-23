@@ -14,19 +14,19 @@ public class ProducerForm {
     private Long id;
 
     @NotBlank(message = "Название не должно быть пустым")
-    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
+    @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String name;
 
     @NotBlank(message = "Адрес не должно быть пустым")
-    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
+    @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String address;
 
     @NotBlank(message = "Общий телефон не должен быть пустым")
-    @Size(min = 2, max = 20, message = "Длинна должна быть больше 2 символов, но не больше 20")
+    @Size(min = 2, max = 20, message = "Длина должна быть больше 2 символов, но не больше 20")
     private String phoneNumber;
 
     @NotBlank(message = "Общий телефон не должен быть пустым")
-    @Size(min = 2, max = 255, message = "Длинна должна быть больше 2 символов, но не больше 255")
+    @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String note;
 
     private List<Provider> providers = new ArrayList<Provider>();

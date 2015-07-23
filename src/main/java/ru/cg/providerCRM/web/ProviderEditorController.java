@@ -66,124 +66,131 @@ public class ProviderEditorController {
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}", method = RequestMethod.GET)
-    public ModelAndView providerFullInfo(@PathVariable("providerId") String providerId) {
+    public ModelAndView providerFullInfo(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = new ModelAndView("providerEditor");
-        Provider provider = providerService.getById(Long.parseLong(providerId));
+        Provider provider = providerService.getById(providerId);
         modelAndView.addObject("providerForm", new ProviderForm(provider));
         addEmployees(modelAndView, providerId);
+        addProducts(modelAndView, providerId);
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit", method = RequestMethod.GET)
-    public ModelAndView editProviderForm(@PathVariable("providerId") String providerId) {
+    public ModelAndView enableEditingMode(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
-        Provider provider = providerService.getById(Long.parseLong(providerId));
+        Provider provider = providerService.getById(providerId);
         modelAndView.addObject("providerForm", new ProviderForm(provider));
-        modelAndView.addObject("providerEditing", true);
-        modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
+        modelAndView.addObject("editingMode", true);
         modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
-        addEmployees(modelAndView, providerId);
         return modelAndView;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit", method = RequestMethod.POST)
-    public ModelAndView updateProvider(@PathVariable("providerId") String providerId,
-                                       @Valid ProviderForm providerForm,
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/info", method = RequestMethod.GET)
+    public ModelAndView editProviderForm(@PathVariable("providerId") Long providerId) {
+        ModelAndView modelAndView = providerFullInfo(providerId);
+        Provider provider = providerService.getById(providerId);
+        modelAndView.addObject("providerEditing", true);
+        modelAndView.addObject("providerForm", new ProviderForm(provider));
+        modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
+        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/info", method = RequestMethod.POST)
+    public ModelAndView updateProvider(@PathVariable("providerId") Long providerId,
+                                       @ModelAttribute(value = "providerForm") @Valid ProviderForm providerForm,
                                        BindingResult result) {
-        providerForm.setId(Long.parseLong(providerId));
+        providerForm.setId(providerId);
         if (result.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("providerEditor");
             modelAndView.addObject("providerEditing", true);
-            if (providerForm.getProducts() == null){
-                providerForm.setProducts(ListUtils.EMPTY_LIST);
-            }
-            modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), providerForm.getProducts()));            if (providerForm.getTags() == null){
-                providerForm.setTags(ListUtils.EMPTY_LIST);
-            }
-            modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), providerForm.getTags()));
+            addProducts(modelAndView, providerId);
             addEmployees(modelAndView, providerId);
             return modelAndView;
         } else {
-            Provider provider = providerService.getById(Long.parseLong(providerId));
+            Provider provider = providerService.getById(providerId);
             providerForm.fillProvider(provider);
             providerService.updateProvider(provider);
             return new ModelAndView("redirect:/provider/" + provider.getId());
         }
     }
 
-
     @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.GET)
-    public ModelAndView getPermissionToAddEmployeeToProvider(@PathVariable("providerId") String providerId) {
+    public ModelAndView enableEmployeeAddingMode(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("employeeWritePermission", true);
+        modelAndView.addObject("employeeAddingMode", true);
         modelAndView.addObject("employeeForm", new EmployeeRegistrationForm());
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.POST)
-    public ModelAndView addEmployeeToProvider(@PathVariable("providerId") String providerId,
+    public ModelAndView addEmployeeToProvider(@PathVariable("providerId") Long providerId,
                                               @ModelAttribute("employeeForm") @Valid EmployeeRegistrationForm employeeRegistrationForm,
                                               BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = providerFullInfo(providerId);
-            modelAndView.addObject("employeeWritePermission", true);
+            modelAndView.addObject("employeeAddingMode", true);
             return modelAndView;
         } else {
             Employee employee = new Employee();
             employeeRegistrationForm.fillEmployee(employee);
-            employee.setProvider(providerService.getById(Long.parseLong(providerId)));
+            employee.setProvider(providerService.getById(providerId));
             employeeService.addEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
         }
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee", method = RequestMethod.GET)
-    public ModelAndView enableEmployeesEditing(@PathVariable("providerId") String providerId) {
+    public ModelAndView enableEmployeesEditing(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("employeeWritePermission", false);
         modelAndView.addObject("employeesEditing", true);
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId}", method = RequestMethod.GET)
-    public ModelAndView selectEmployeeToEdit(@PathVariable("providerId") String providerId,
+    public ModelAndView selectEmployeeToEdit(@PathVariable("providerId") Long providerId,
                                              @PathVariable("employeeId") String employeeId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("employeeWritePermission", false);
+        modelAndView.addObject("employeesEditing", true);
         modelAndView.addObject("editableEmployeeId", employeeId);
         modelAndView.addObject("employeeForm", new EmployeeEditForm(employeeService.getById(Long.parseLong(employeeId))));
         return modelAndView;
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId}/delete", method = RequestMethod.POST)
-    public ModelAndView deleteEmployee(@PathVariable("providerId") String providerId,
-                                       @PathVariable("employeeId") String employeeId) {
-        providerService.deleteEmployee(Long.parseLong(employeeId), Long.parseLong(providerId));
+    public ModelAndView deleteEmployee(@PathVariable("providerId") Long providerId,
+                                       @PathVariable("employeeId") Long employeeId) {
+        providerService.deleteEmployee(employeeId, providerId);
         return new ModelAndView("redirect:/provider/" + providerId + "/edit/employee");
     }
 
     @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId:.+}", method = RequestMethod.POST)
-    public ModelAndView updateEmployee(@PathVariable("providerId") String providerId,
-                                       @PathVariable("employeeId") String employeeId,
+    public ModelAndView updateEmployee(@PathVariable("providerId") Long providerId,
+                                       @PathVariable("employeeId") Long employeeId,
                                        @ModelAttribute("employeeForm") @Valid EmployeeEditForm employeeForm,
                                        BindingResult result) {
-        employeeForm.setId(Long.parseLong(employeeId));
+        employeeForm.setId(employeeId);
         if (result.hasErrors()) {
             ModelAndView modelAndView = providerFullInfo(providerId);
-            modelAndView.addObject("employeeWritePermission", false);
+            modelAndView.addObject("employeeAddingMode", false);
             modelAndView.addObject("editableEmployeeId", employeeId);
             return modelAndView;
         } else {
             Employee employee = employeeForm.getEmployee();
-            employee.setProvider(providerService.getById(Long.parseLong(providerId)));
+            employee.setProvider(providerService.getById(providerId));
             employeeService.updateEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
         }
     }
 
-    private void addEmployees(ModelAndView modelAndView, String providerId) {
-        Provider provider = providerService.getById(Long.parseLong(providerId));
+    private void addEmployees(ModelAndView modelAndView, Long providerId) {
+        Provider provider = providerService.getById(providerId);
         modelAndView.addObject("employees", provider.getEmployees());
+    }
+
+    private void addProducts(ModelAndView modelAndView, Long providerId) {
+        Provider provider = providerService.getById(providerId);
+        modelAndView.addObject("products", provider.getProducts());
     }
 
     //todo
