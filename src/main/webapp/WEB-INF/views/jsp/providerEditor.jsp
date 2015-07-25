@@ -19,9 +19,72 @@
 </head>
 <body>
 
+<c:if test="${productEditing}">
+    <%-- Modal --%>
+    <div class="modal fade" id="productRegistrationModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Добавление нового оборудования</h4>
+                </div>
+                <div class="modal-body">
+                    <form:form method="post" action="/provider/${providerForm.id}/edit/products/addProduct"
+                               name="testForm" commandName="productForm">
+                        <form:errors path="*">
+
+                            <script type="text/javascript">
+                                $(document).ready(function () {
+                                    $("#productRegistrationModal").modal('show');
+                                });
+                            </script>
+                   </form:errors>
+                        <form:input class="form-control" placeholder="Введите назнание оборудования" required="required"
+                                    path="name"/>
+                        <form:errors path="name" cssClass="error"/>
+
+                        <form:input class="form-control" placeholder="Введите цену" required="required" path="price"/>
+                        <form:errors path="price" cssClass="error"/>
+
+                        <form:input class="form-control" placeholder="Введите примечание" required="required"
+                                    path="note"/>
+                        <form:errors path="note" cssClass="error"/>
+
+                        <form:button type="submit" class="btn btn-success">Сохранить</form:button>
+                    </form:form>
+                </div>
+            </div>
+        </div>
+    </div>
+</c:if>
+
 <div class="container">
 
     <div class="page-header">
+
+
+        <ul class="nav nav-pills navbar-right">
+            <c:choose>
+                <c:when test="${editingMode}">
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}">Отмена</a>
+                    </li>
+                </c:when>
+                <c:when test="${providerEditing or employeesEditing or employeeAddingMode or productEditing or (editableEmployeeId!=null)}">
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}/edit">Отмена</a>
+                    </li>
+                </c:when>
+                <c:otherwise>
+                    <li class="active">
+                        <a href="/provider/${providerForm.id}/edit">Редактировать</a>
+                    </li>
+                    <li class="active">
+                        <a href="/selectProvider/${providerForm.id}">Вернуться</a>
+                    </li>
+                </c:otherwise>
+            </c:choose>
+        </ul>
         <h2>${providerForm.name}</h2>
     </div>
 
@@ -247,30 +310,42 @@
     </div>
 
     <div class="product table">
+
         <table class="table table-striped">
             <%-- Добавить кнопки, если в режиме редактирования --%>
-            <c:if test="${editingMode}">
-                <ul class="nav nav-pills navbar-right">
-                    <li class="active">
-                        <a href="/provider/${providerForm.id}/edit/products/add">
-                            Привязать оборудование
-                        </a>
-                    </li>
-                    <li class="active">
-                            <%-- TODO: тут должна быть кнопка открывающая модальное окно для создания нового продукта --%>
-                        <a href="/products/addNew">
-                            Новое оборудование
-                        </a>
-                    </li>
-                </ul>
-            </c:if>
-
+            <c:choose>
+                <c:when test="${productEditing}">
+                    <ul class="nav nav-pills navbar-right">
+                        <li class="active">
+                            <a href="/provider/${providerForm.id}/edit/products/add">
+                                Привязать оборудование
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a data-toggle="modal" data-target="#productRegistrationModal">
+                                Новое оборудование
+                            </a>
+                        </li>
+                    </ul>
+                </c:when>
+                <c:when test="${editingMode}">
+                    <ul class="nav nav-pills navbar-right">
+                        <li class="active">
+                            <a href="/provider/${providerForm.id}/edit/products">
+                                Редактировать оборудование
+                            </a>
+                        </li>
+                    </ul>
+                </c:when>
+            </c:choose>
             <h3>Поставляемое оборудование</h3>
             <thead>
             <tr>
                 <th>#</th>
                 <th>Наименование</th>
+                <th>Стоимость</th>
                 <th>Комментарий</th>
+                <th/>
             </tr>
             </thead>
             <tbody>
@@ -278,9 +353,52 @@
                 <tr>
                     <td><a href="/product/${product.id}"><c:out value="${product.id}"/></a></td>
                     <td><c:out value="${product.name}"/></td>
+                    <td><c:out value="${product.price}"/></td>
                     <td><c:out value="${product.note}"/></td>
+                    <td/>
                 </tr>
             </c:forEach>
+            <%-- Выдать список всех продуктов --%>
+            <c:if test="${productAddingMode}">
+                <tr style="border: solid 2px #ddd">
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                Существующее оборудование <span class="caret"/>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <c:forEach items="${otherProducts}" var="product">
+                                    <li>
+                                        <a href="/provider/${providerForm.id}/edit/products/add/${product.id}">
+                                                ${product.name}
+                                        </a>
+                                    </li>
+                                </c:forEach>
+                                <li class="divider"></li>
+                                <li><a data-toggle="modal" data-target="#productRegistrationModal">Добавить новое
+                                    оборудование</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                    <c:if test="${not empty selectedProduct}">
+                        <td><c:out value="${selectedProduct.name}"/></td>
+                        <td><c:out value="${selectedProduct.price}"/></td>
+                        <td><c:out value="${selectedProduct.note}"/></td>
+                        <td>
+                            <form action="/provider/${providerForm.id}/edit/products/add/${selectedProduct.id}"
+                                  method="post">
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Привязать</button>
+                                    <button type="button"
+                                            onclick="location.href = '/provider/${providerForm.id}/edit/products/add/'"
+                                            class="btn">Отменить
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                    </c:if>
+                </tr>
+            </c:if>
             </tbody>
         </table>
     </div>
@@ -293,9 +411,9 @@
                         <a href="/provider/${providerForm.id}">Отмена</a>
                     </li>
                 </c:when>
-                <c:when test="${providerEditing || employeesEditing || employeeAddingMode || (editableEmployeeId!=null)}">
+                <c:when test="${providerEditing or employeesEditing or employeeAddingMode or productEditing or (editableEmployeeId!=null)}">
                     <li class="active">
-                        <a href="/provider/${providerForm.id}">Отмена</a>
+                        <a href="/provider/${providerForm.id}/edit">Отмена</a>
                     </li>
                 </c:when>
                 <c:otherwise>
@@ -309,7 +427,6 @@
             </c:choose>
         </ul>
     </div>
-
 </div>
 
 </body>

@@ -145,7 +145,7 @@ public class MainController {
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public ModelAndView displaySearch() {
-       return new ModelAndView("search");
+        return new ModelAndView("search");
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)

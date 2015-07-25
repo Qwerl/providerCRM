@@ -15,6 +15,7 @@ import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
 import ru.cg.providerCRM.web.form.EmployeeEditForm;
 import ru.cg.providerCRM.web.form.EmployeeRegistrationForm;
+import ru.cg.providerCRM.web.form.ProductRegisterForm;
 import ru.cg.providerCRM.web.form.ProviderForm;
 
 import javax.validation.Valid;
@@ -91,7 +92,7 @@ public class ProviderEditorController {
         Provider provider = providerService.getById(providerId);
         modelAndView.addObject("providerEditing", true);
         modelAndView.addObject("providerForm", new ProviderForm(provider));
-        modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
+
         modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
         return modelAndView;
     }
@@ -181,6 +182,57 @@ public class ProviderEditorController {
             employeeService.updateEmployee(employee);
             return new ModelAndView("redirect:/provider/" + providerId);
         }
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products", method = RequestMethod.GET)
+    public ModelAndView enableProductsEditing(@PathVariable("providerId") Long providerId) {
+        ModelAndView modelAndView = providerFullInfo(providerId);
+        modelAndView.addObject("productEditing", true);
+        modelAndView.addObject("productForm", new ProductRegisterForm());
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/addProduct", method = RequestMethod.POST)
+    public ModelAndView addNewProduct(@PathVariable("providerId") Long providerId,
+                                      @ModelAttribute("productForm") @Valid ProductRegisterForm form,
+                                      BindingResult result) {
+        if (result.hasErrors()) {
+            ModelAndView modelAndView = providerFullInfo(providerId);
+            modelAndView.addObject("productEditing", true);
+            return modelAndView;
+        } else {
+            Product product = form.getProduct();
+            productService.addProduct(product);
+            return new ModelAndView("redirect:/provider/" + providerId + "/edit/products/add");
+        }
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/add", method = RequestMethod.GET)
+    public ModelAndView productsAddingForm(@PathVariable("providerId") Long providerId) {
+        ModelAndView modelAndView = enableProductsEditing(providerId);
+        Provider provider = providerService.getById(providerId);
+        modelAndView.addObject("productAddingMode", true);
+        modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/add/{productId}", method = RequestMethod.GET)
+    public ModelAndView selectProduct(@PathVariable("providerId") Long providerId,
+                                      @PathVariable("productId") Long productId) {
+        ModelAndView modelAndView = productsAddingForm(providerId);
+        Product selectedProduct = productService.getById(productId);
+        modelAndView.addObject("selectedProduct", selectedProduct);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/add/{productId}", method = RequestMethod.POST)
+    public ModelAndView selectProductSubmit(@PathVariable("providerId") Long providerId,
+                                            @PathVariable("productId") Long productId) {
+        Provider provider = providerService.getById(providerId);
+        Product selectedProduct = productService.getById(productId);
+        provider.getProducts().add(selectedProduct);
+        providerService.updateProvider(provider);
+        return new ModelAndView("redirect:/provider/" + provider.getId() + "/edit/products/add");
     }
 
     private void addEmployees(ModelAndView modelAndView, Long providerId) {
