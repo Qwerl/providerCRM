@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Product;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 public class ProductRegisterForm {
 
@@ -11,7 +12,8 @@ public class ProductRegisterForm {
     private String name;
 
     @NotNull(message = "Стоймость не должна быть пустой")
-    private Long price;
+    @Pattern(regexp = "^[0-9]+", message = "Стоимость должна выражаться числом")
+    private String price;
 
     @NotBlank(message = "Примечания не должны быть пустыми")
     private String note;
@@ -22,7 +24,7 @@ public class ProductRegisterForm {
     public Product getProduct(){
         Product product = new Product();
         product.setName(name);
-        product.setPrice(price);
+        product.setPrice(Long.parseLong(price));
         product.setNote(note);
         return product;
     }
@@ -35,11 +37,11 @@ public class ProductRegisterForm {
         this.name = name;
     }
 
-    public Long getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 

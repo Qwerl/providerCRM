@@ -235,7 +235,7 @@ public class ProviderEditorController {
     private List<ErrorMessage> getErrorMessages(List<FieldError> allErrors) {
         List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
         for (FieldError objectError : allErrors) {
-            errorMessages.add(new ErrorMessage(objectError.getField(), objectError.getField() + "  " + objectError.getDefaultMessage()));
+            errorMessages.add(new ErrorMessage(objectError.getField(), objectError.getDefaultMessage()));
         }
         return errorMessages;
     }
