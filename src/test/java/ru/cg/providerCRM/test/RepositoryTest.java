@@ -17,7 +17,7 @@ import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertTrue;
 
 
-@ContextConfiguration(locations = "/test-app-context.xml")
+@ContextConfiguration(locations = "file:src/main/webapp/WEB-INF/spring-core-config.xml")
 @TransactionConfiguration(defaultRollback = true, transactionManager = "transactionManager")
 public class RepositoryTest extends AbstractTransactionalTestNGSpringContextTests {
 

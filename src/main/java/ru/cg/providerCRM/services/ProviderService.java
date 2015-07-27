@@ -16,4 +16,5 @@ public interface ProviderService {
     void deleteEmployee(Long employeeId, Long providerId);
     void addDocument(Document document, Long providerId);
     List<Provider> getProviderBySpecificText(String text);
+    void deleteProduct(Long productId, Long providerId);
 }

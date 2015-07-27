@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.testng.Assert.assertNotNull;
 
-@ContextConfiguration(locations = "/test-app-context.xml")
+@ContextConfiguration(locations = "file:src/main/webapp/WEB-INF/spring-core-config.xml")
 @TransactionConfiguration(defaultRollback = true, transactionManager = "transactionManager")
 public class ServiceTest extends AbstractTransactionalTestNGSpringContextTests {
 

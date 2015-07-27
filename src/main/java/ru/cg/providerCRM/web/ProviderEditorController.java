@@ -5,14 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.cg.providerCRM.entity.*;
+import ru.cg.providerCRM.entity.Employee;
+import ru.cg.providerCRM.entity.Product;
+import ru.cg.providerCRM.entity.Provider;
+import ru.cg.providerCRM.entity.Tag;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProductService;
 import ru.cg.providerCRM.services.ProviderService;
 import ru.cg.providerCRM.services.TagService;
+import ru.cg.providerCRM.validator.ErrorMessage;
+import ru.cg.providerCRM.validator.ValidationResponse;
 import ru.cg.providerCRM.web.form.EmployeeEditForm;
 import ru.cg.providerCRM.web.form.EmployeeRegistrationForm;
 import ru.cg.providerCRM.web.form.ProductRegisterForm;
@@ -20,6 +26,8 @@ import ru.cg.providerCRM.web.form.ProviderForm;
 
 import javax.validation.Valid;
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Scope("request")
@@ -192,18 +200,56 @@ public class ProviderEditorController {
         return modelAndView;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/addProduct", method = RequestMethod.POST)
-    public ModelAndView addNewProduct(@PathVariable("providerId") Long providerId,
-                                      @ModelAttribute("productForm") @Valid ProductRegisterForm form,
-                                      BindingResult result) {
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/edit", method = RequestMethod.GET)
+    public ModelAndView editProduct(@PathVariable("providerId") Long providerId) {
+        ModelAndView modelAndView = enableProductsEditing(providerId);
+        modelAndView.addObject("productUnbindingMode", true);
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/edit/{productId}", method = RequestMethod.POST)
+    @ResponseBody
+    public Object unbindProduct(@PathVariable("providerId") Long providerId,
+                                @PathVariable("productId") Long productId) {
+        providerService.deleteProduct(productId, providerId);
+        return new ErrorMessage("status", "SUCCESS");
+    }
+
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/validateNew", method = RequestMethod.POST)
+    @ResponseBody
+    public ValidationResponse processProductForm(@PathVariable("providerId") Long providerId,
+                                                 @ModelAttribute("productForm") @Valid ProductRegisterForm form,
+                                                 BindingResult result) {
+        ValidationResponse res = new ValidationResponse();
         if (result.hasErrors()) {
-            ModelAndView modelAndView = providerFullInfo(providerId);
-            modelAndView.addObject("productEditing", true);
-            return modelAndView;
+            res.setStatus("FAIL");
+            res.setErrorMessageList(getErrorMessages(result.getFieldErrors()));
         } else {
             Product product = form.getProduct();
             productService.addProduct(product);
-            return new ModelAndView("redirect:/provider/" + providerId + "/edit/products/add");
+            res.setStatus("SUCCESS");
+        }
+        return res;
+    }
+
+    private List<ErrorMessage> getErrorMessages(List<FieldError> allErrors) {
+        List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
+        for (FieldError objectError : allErrors) {
+            errorMessages.add(new ErrorMessage(objectError.getField(), objectError.getField() + "  " + objectError.getDefaultMessage()));
+        }
+        return errorMessages;
+    }
+
+    /* ToDo: возможно стоит  */
+    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/addProduct", method = RequestMethod.POST)
+    public ModelAndView productAddingEnd(@PathVariable("providerId") Long providerId,
+                                         @ModelAttribute("productForm") @Valid ProductRegisterForm form,
+                                         BindingResult result) {
+        if (result.hasErrors()) {
+            System.out.println("JS отключен");
+            return enableProductsEditing(providerId);
+        } else {
+            return enableProductsEditing(providerId);
         }
     }
 
@@ -234,6 +280,7 @@ public class ProviderEditorController {
         providerService.updateProvider(provider);
         return new ModelAndView("redirect:/provider/" + provider.getId() + "/edit/products/add");
     }
+
 
     private void addEmployees(ModelAndView modelAndView, Long providerId) {
         Provider provider = providerService.getById(providerId);

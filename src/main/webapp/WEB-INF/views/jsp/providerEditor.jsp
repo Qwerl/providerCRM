@@ -11,10 +11,11 @@
     <spring:url value="/resources/core/css/styles2.css" var="coreCss"/>
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
     <spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs"/>
+    <spring:url value="/resources/core/js/jquery.js" var="jqueryJs"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <script src="${jqueryJs}"></script>
     <link type="text/css" href="${coreCss}" rel="stylesheet"/>
     <link rel="stylesheet" href="${bootstrapCss}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="${bootstrapJs}"></script>
 </head>
 <body>
@@ -30,27 +31,33 @@
                 </div>
                 <div class="modal-body">
                     <form:form method="post" action="/provider/${providerForm.id}/edit/products/addProduct"
-                               name="testForm" commandName="productForm">
-                        <form:errors path="*">
+                               name="testForm" commandName="productForm" id="productRegistrationForm">
 
-                            <script type="text/javascript">
-                                $(document).ready(function () {
-                                    $("#productRegistrationModal").modal('show');
-                                });
-                            </script>
-                   </form:errors>
-                        <form:input class="form-control" placeholder="Введите назнание оборудования" required="required"
-                                    path="name"/>
-                        <form:errors path="name" cssClass="error"/>
+                        <div class="control-group" id="nameControlGroup">
+                            <div class="controls">
+                                <form:input class="form-control" placeholder="Введите назнание оборудования"
+                                            required="required" path="name"/>
+                                <span class="help-inline"><form:errors path="name" cssClass="error"/></span>
+                            </div>
+                        </div>
+                        <div class="control-group" id="priceControlGroup">
+                            <div class="controls">
+                                <form:input class="form-control" placeholder="Введите цену" required="required"
+                                            path="price"/>
+                                <span class="help-inline"><form:errors path="price" cssClass="error"/></span>
+                            </div>
+                        </div>
+                        <div class="control-group" id="noteControlGroup">
+                            <div class="controls">
+                                <form:input class="form-control" placeholder="Введите примечание" required="required"
+                                            path="note"/>
+                                <span class="help-inline"><form:errors path="note" cssClass="error"/></span>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <form:button type="submit" class="btn btn-success">Сохранить</form:button>
+                        </div>
 
-                        <form:input class="form-control" placeholder="Введите цену" required="required" path="price"/>
-                        <form:errors path="price" cssClass="error"/>
-
-                        <form:input class="form-control" placeholder="Введите примечание" required="required"
-                                    path="note"/>
-                        <form:errors path="note" cssClass="error"/>
-
-                        <form:button type="submit" class="btn btn-success">Сохранить</form:button>
                     </form:form>
                 </div>
             </div>
@@ -310,7 +317,6 @@
     </div>
 
     <div class="product table">
-
         <table class="table table-striped">
             <%-- Добавить кнопки, если в режиме редактирования --%>
             <c:choose>
@@ -322,8 +328,13 @@
                             </a>
                         </li>
                         <li class="active">
-                            <a data-toggle="modal" data-target="#productRegistrationModal">
+                            <a href="" data-toggle="modal" data-target="#productRegistrationModal">
                                 Новое оборудование
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="/provider/${providerForm.id}/edit/products/edit">
+                                Отвязать оборудование
                             </a>
                         </li>
                     </ul>
@@ -349,16 +360,32 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${products}" var="product">
-                <tr>
-                    <td><a href="/product/${product.id}"><c:out value="${product.id}"/></a></td>
+            <c:forEach items="${products}" var="product" varStatus="productStatus">
+                <tr id="tr${product.id}">
+                    <td><a href="/product/${product.id}">${productStatus.index + 1}</a></td>
                     <td><c:out value="${product.name}"/></td>
                     <td><c:out value="${product.price}"/></td>
                     <td><c:out value="${product.note}"/></td>
-                    <td/>
+                    <c:choose>
+                        <c:when test="${productUnbindingMode}">
+                            <td>
+                                <ul class="nav nav-pills navbar-right">
+                                    <li class="default">
+                                        <a href="javascript:unbindProduct(${product.id})">
+                                            Отвязать
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </c:when>
+                        <c:otherwise>
+                            <td/>
+                        </c:otherwise>
+                    </c:choose>
+
                 </tr>
             </c:forEach>
-            <%-- Выдать список всех продуктов --%>
+            <%-- Выдать список всех продуктов, которых нет у поставщика --%>
             <c:if test="${productAddingMode}">
                 <tr style="border: solid 2px #ddd">
                     <td>
@@ -380,11 +407,12 @@
                             </ul>
                         </div>
                     </td>
-                    <c:if test="${not empty selectedProduct}">
-                        <td><c:out value="${selectedProduct.name}"/></td>
-                        <td><c:out value="${selectedProduct.price}"/></td>
-                        <td><c:out value="${selectedProduct.note}"/></td>
-                        <td>
+                        <%-- Показать информацию о выбранном оборудовании --%>
+                    <td><c:out value="${selectedProduct.name}"/></td>
+                    <td><c:out value="${selectedProduct.price}"/></td>
+                    <td><c:out value="${selectedProduct.note}"/></td>
+                    <td>
+                        <c:if test="${not empty selectedProduct}">
                             <form action="/provider/${providerForm.id}/edit/products/add/${selectedProduct.id}"
                                   method="post">
                                 <div class="form-actions">
@@ -395,8 +423,8 @@
                                     </button>
                                 </div>
                             </form>
-                        </td>
-                    </c:if>
+                        </c:if>
+                    </td>
                 </tr>
             </c:if>
             </tbody>
@@ -429,5 +457,55 @@
     </div>
 </div>
 
+<script type="text/javascript">
+    var unbindProduct = function (productId) {
+        $.ajax({
+            type: 'POST',
+            url: '/provider/${providerForm.id}/edit/products/edit/' + productId,
+            dataType: 'json',
+            async: true,
+            success: function () {
+                $('#tr' + productId).remove();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.status + ' ' + jqXHR.responseText);
+            }
+        });
+    }
+
+    function collectFormData(fields) {
+        var data = {};
+        for (var i = 0; i < fields.length; i++) {
+            var $item = $(fields[i]);
+            data[$item.attr('name')] = $item.val();
+        }
+        return data;
+    }
+    $(document).ready(function () {
+        var $form = $('#productRegistrationForm');
+        $form.bind('submit', function (e) {
+            var $inputs = $form.find('input');
+            var data = collectFormData($inputs);
+            $.post('/provider/${providerForm.id}/edit/products/validateNew', data, function (response) {
+                $form.find('.control-group').removeClass('error');
+                $form.find('.help-inline').empty();
+                $form.find('.alert').remove();
+                if (response.status == 'FAIL') {
+                    for (var i = 0; i < response.errorMessageList.length; i++) {
+                        var item = response.errorMessageList[i];
+                        var $controlGroup = $('#' + item.fieldName + 'ControlGroup');
+                        $controlGroup.addClass('error');
+                        $controlGroup.find('.help-inline').html(item.message);
+                    }
+                } else {
+                    $form.unbind('submit');
+                    $form.submit();
+                }
+            }, 'json');
+            e.preventDefault();
+            return false;
+        });
+    });
+</script>
 </body>
 </html>

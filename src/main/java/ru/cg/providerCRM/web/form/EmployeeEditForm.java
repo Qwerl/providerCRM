@@ -18,7 +18,7 @@ public class EmployeeEditForm {
     private String fullName;
 
     @NotBlank(message = "Email не должен быть путым")
-    @Email(message = "Email введен не корректно")
+    @Email(message = "Email введен некорректно")
     private String email;
 
     @NotBlank(message = "Мобильный телефон не должен быть путым")

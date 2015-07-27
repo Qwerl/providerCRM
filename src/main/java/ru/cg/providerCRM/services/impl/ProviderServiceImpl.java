@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.cg.providerCRM.entity.*;
 import ru.cg.providerCRM.repository.DocumentRepository;
+import ru.cg.providerCRM.repository.ProductRepository;
 import ru.cg.providerCRM.repository.ProviderRepository;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProviderService;
@@ -20,6 +21,9 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Autowired
     public EmployeeService employeeService;
+
+    @Autowired
+    public ProductRepository productRepository;
 
     @Autowired
     public DocumentRepository documentRepository;
@@ -85,7 +89,6 @@ public class ProviderServiceImpl implements ProviderService {
         documentRepository.saveAndFlush(document);
     }
 
-    @Override
     public List<Provider> getProviderBySpecificText(String text) {
         String textToSearch = "%" + text + "%";
 
@@ -96,5 +99,12 @@ public class ProviderServiceImpl implements ProviderService {
         } else {
             return providers;
         }
+    }
+
+    public void deleteProduct(Long productId, Long providerId) {
+        Product product = productRepository.getOne(productId);
+        Provider provider = providerRepository.getOne(providerId);
+        provider.getProducts().remove(product);
+        providerRepository.saveAndFlush(provider);
     }
 }
