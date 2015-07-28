@@ -8,7 +8,7 @@
 <head>
     <title>testTask</title>
     <spring:url value="/resources/core/css/newStyles.css" var="coreCss"/>
-    <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
+    <spring:url value="/resources/core/img/search.png" var="searchPng"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link type="text/css" href="${coreCss}" rel="stylesheet"/>
 </head>
@@ -24,17 +24,12 @@
             <a href="/selectProducer" id="selected">
                 <span>Производители</span>
             </a>
-            <a href="/search">
-                <span>Поиск</span>
-            </a>
-
             <form class="search" action="/search" method="post">
                 <input name="tag" required>
-                <button type="submit"></button>
+                <button type="submit"><img src="${searchPng}" width="16"/></button>
             </form>
         </div>
     </div>
-
 
     <div class="infoTable">
         <div class="infoBlock" id="block1">
