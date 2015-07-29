@@ -19,7 +19,6 @@
         <mapping class="ru.cg.providerCRM.entity.Producer"/>
         <mapping class="ru.cg.providerCRM.entity.Provider"/>
         <mapping class="ru.cg.providerCRM.entity.Product"/>
-        <mapping class="ru.cg.providerCRM.entity.Tag"/>
         <mapping class="ru.cg.providerCRM.entity.Document"/>
 
     </session-factory>

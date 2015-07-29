@@ -43,6 +43,14 @@ public class ProviderForm {
         this.note = provider.getNote();
     }
 
+    public void fillProvider(Provider provider) {
+        provider.setName(name);
+        provider.setAddress(address);
+        provider.setPhoneNumber(phoneNumber);
+        provider.setStorageAddress(storageAddress);
+        provider.setNote(note);
+    }
+
     public Long getId() {
         return id;
     }
@@ -90,17 +98,6 @@ public class ProviderForm {
     public void setNote(String note) {
         this.note = note;
     }
-
-
-    public void fillProvider(Provider provider) {
-        provider.setName(name);
-        provider.setAddress(address);
-        provider.setPhoneNumber(phoneNumber);
-        provider.setStorageAddress(storageAddress);
-        provider.setNote(note);
-    }
-
-
 
     @Override
     public String toString() {

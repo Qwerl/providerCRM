@@ -11,11 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.Employee;
 import ru.cg.providerCRM.entity.Producer;
 import ru.cg.providerCRM.entity.Provider;
-import ru.cg.providerCRM.entity.Tag;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProducerService;
 import ru.cg.providerCRM.services.ProviderService;
-import ru.cg.providerCRM.services.TagService;
 import ru.cg.providerCRM.web.form.EmployeeEditForm;
 import ru.cg.providerCRM.web.form.EmployeeRegistrationForm;
 import ru.cg.providerCRM.web.form.ProducerForm;
@@ -32,9 +30,6 @@ public class ProducerEditorController {
     private ProducerService producerService;
 
     @Autowired
-    private TagService tagService;
-
-    @Autowired
     private ProviderService providerService;
 
     @Autowired
@@ -42,14 +37,12 @@ public class ProducerEditorController {
 
     @InitBinder
     public void initBinder(WebDataBinder b) {
-        b.registerCustomEditor(Tag.class, new TagEditor());
         b.registerCustomEditor(Provider.class, new ProviderEditor());
     }
 
     @RequestMapping(value = "/producer/add", method = RequestMethod.GET)
     public ModelAndView displayProducerRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProducer");
-        modelAndView.addObject("tags", tagService.getAllTags());
         modelAndView.addObject("producerForm", new ProducerForm());
         return modelAndView;
     }
@@ -59,7 +52,6 @@ public class ProducerEditorController {
 
         if (result.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("addNewProducer");
-            modelAndView.addObject("tags", tagService.getAllTags());
             return modelAndView;
         } else {
             Producer producer = new Producer();
@@ -85,7 +77,6 @@ public class ProducerEditorController {
         modelAndView.addObject("producerForm", new ProducerForm(producer));
         modelAndView.addObject("producerEditing", true);
         modelAndView.addObject("otherProviders", ListUtils.subtract(providerService.getAllProviders(), producer.getProviders()));
-        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), producer.getTags()));
 
         addEmployees(modelAndView, producerId);
         return modelAndView;
@@ -103,10 +94,6 @@ public class ProducerEditorController {
                 producerForm.setProviders(ListUtils.EMPTY_LIST);
             }
             modelAndView.addObject("otherProviders", ListUtils.subtract(providerService.getAllProviders(), producerForm.getProviders()));
-            if (producerForm.getTags() == null) {
-                producerForm.setTags(ListUtils.EMPTY_LIST);
-            }
-            modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), producerForm.getTags()));
             addEmployees(modelAndView, producerId);
             return modelAndView;
         } else {
@@ -189,21 +176,6 @@ public class ProducerEditorController {
     private void addEmployees(ModelAndView modelAndView, String producerId) {
         Producer producer = producerService.getById(Long.parseLong(producerId));
         modelAndView.addObject("employees", producer.getEmployees());
-    }
-
-    //todo
-    private class TagEditor extends PropertyEditorSupport {
-
-        @Override
-        public void setAsText(String text) throws IllegalArgumentException {
-            setValue(tagService.getByName(text));
-        }
-
-        @Override
-        public String getAsText() {
-            return ((Tag) getValue()).getTagText();
-        }
-
     }
 
     private class ProviderEditor extends PropertyEditorSupport {

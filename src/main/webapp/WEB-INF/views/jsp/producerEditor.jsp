@@ -211,16 +211,6 @@
                                 <form:errors path="providers" cssClass="error"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td>Теги</td>
-                            <td>
-                                <form:checkboxes path="tags" items="${producerForm.tags}" checked="checked"/>
-                                <form:checkboxes path="tags" items="${otherTags}"/>
-                            </td>
-                            <td>
-                                <form:errors path="tags" cssClass="error"/>
-                            </td>
-                        </tr>
                     </c:when>
 
                     <c:otherwise>
@@ -248,17 +238,6 @@
                                     <li class="active">
                                         <a href="${pageContext.request.contextPath}/provider/${provider.id}">
                                             <c:out value="${provider.name}"/></a>
-                                    </li>
-                                </c:forEach>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Теги</td>
-                            <td>
-                                <c:forEach items="${producerForm.tags}" var="tag">
-                                    <li class="active">
-                                        <a href="${pageContext.request.contextPath}/search/${tag.tagText}">
-                                            <c:out value="${tag.tagText}"/></a>
                                     </li>
                                 </c:forEach>
                             </td>

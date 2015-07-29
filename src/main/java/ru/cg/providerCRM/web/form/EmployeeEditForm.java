@@ -17,21 +17,25 @@ public class EmployeeEditForm {
     @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String fullName;
 
-    @NotBlank(message = "Email не должен быть путым")
+    @NotBlank(message = "Email не должен быть пустым")
     @Email(message = "Email введен некорректно")
     private String email;
 
-    @NotBlank(message = "Мобильный телефон не должен быть путым")
+    @NotBlank(message = "Мобильный телефон не должен быть пустым")
     @Size(min = 2, max = 20, message = "Длина должна быть больше 2 символов, но не больше 20")
     private String homePhoneNumber;
 
-    @NotBlank(message = "Рабочий телефон не должен быть путым")
+    @NotBlank(message = "Рабочий телефон не должен быть пустым")
     @Size(min = 2, max = 20, message = "Длина должна быть больше 2 символов, но не больше 20")
     private String workPhoneNumber;
 
-    @NotBlank(message = "Должность не должена быть путой")
+    @NotBlank(message = "Должность не должена быть пустой")
     @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String position;
+
+
+    private Long providerId;
+    private Long producerId;
 
     public EmployeeEditForm() {
     }
@@ -43,6 +47,16 @@ public class EmployeeEditForm {
         this.setHomePhoneNumber(employee.getHomePhoneNumber());
         this.setWorkPhoneNumber(employee.getWorkPhoneNumber());
         this.setPosition(employee.getPosition());
+        if (employee.getProvider() != null) {
+            providerId = employee.getProvider().getId();
+        } else {
+            providerId = 0L;
+        }
+        if (employee.getProducer() != null) {
+            producerId = employee.getProducer().getId();
+        } else {
+            producerId = 0L;
+        }
     }
 
     public Employee getEmployee() {
@@ -104,15 +118,33 @@ public class EmployeeEditForm {
         this.position = position;
     }
 
+    public Long getProviderId() {
+        return providerId;
+    }
+
+    public void setProviderId(Long providerId) {
+        this.providerId = providerId;
+    }
+
+    public Long getProducerId() {
+        return producerId;
+    }
+
+    public void setProducerId(Long producerId) {
+        this.producerId = producerId;
+    }
+
     @Override
     public String toString() {
-        return "EmployeeForm{" +
+        return "EmployeeEditForm{" +
                 "id=" + id +
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", homePhoneNumber='" + homePhoneNumber + '\'' +
                 ", workPhoneNumber='" + workPhoneNumber + '\'' +
                 ", position='" + position + '\'' +
+                ", providerId=" + providerId +
+                ", producerId=" + producerId +
                 '}';
     }
 

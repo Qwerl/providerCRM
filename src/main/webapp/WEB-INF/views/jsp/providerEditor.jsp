@@ -30,27 +30,17 @@
                     <h4 class="modal-title">Добавление нового оборудования</h4>
                 </div>
                 <div class="modal-body">
-                    <form:form method="post" action="/provider/${providerForm.id}/edit/products/addProduct"
-                               name="testForm" commandName="productForm" id="productRegistrationForm">
+                    <form:form method="post" action="/provider/${providerForm.id}/edit/products/addProduct" name="testForm" commandName="productForm" id="productRegistrationForm">
 
                         <div class="control-group" id="nameControlGroup">
                             <div class="controls">
-                                <form:input class="form-control" placeholder="Введите назнание оборудования"
-                                            required="required" path="name"/>
+                                <form:input class="form-control" placeholder="Введите назнание оборудования" required="required" path="name"/>
                                 <span class="help-inline"><form:errors path="name" cssClass="error"/></span>
-                            </div>
-                        </div>
-                        <div class="control-group" id="priceControlGroup">
-                            <div class="controls">
-                                <form:input class="form-control" placeholder="Введите цену" required="required"
-                                            path="price"/>
-                                <span class="help-inline"><form:errors path="price" cssClass="error"/></span>
                             </div>
                         </div>
                         <div class="control-group" id="noteControlGroup">
                             <div class="controls">
-                                <form:input class="form-control" placeholder="Введите примечание" required="required"
-                                            path="note"/>
+                                <form:input class="form-control" placeholder="Введите примечание" required="required" path="note"/>
                                 <span class="help-inline"><form:errors path="note" cssClass="error"/></span>
                             </div>
                         </div>
@@ -125,12 +115,12 @@
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${employees}" var="currentEmployee">
+            <c:forEach items="${employees}" var="employee">
                 <tr>
                     <c:choose>
                         <%-- Режим редактирования содрудника с заданным ID --%>
-                        <c:when test="${employeeForm.id == currentEmployee.id}">
-                            <form:form action="/provider/${providerForm.id}/edit/employee/${currentEmployee.id}"
+                        <c:when test="${employeeForm.id == employee.id}">
+                            <form:form action="/provider/${providerForm.id}/edit/employee/${employee.id}"
                                        method="post" commandName="employeeForm">
                                 <td>
                                     <form:input class="form-control"
@@ -167,18 +157,18 @@
                         </c:when>
                         <%-- Режим выбора редактируемого сотрудника --%>
                         <c:when test="${employeesEditing}">
-                            <td>${currentEmployee.position}</td>
-                            <td>${currentEmployee.fullName}</td>
-                            <td>${currentEmployee.email}</td>
-                            <td>${currentEmployee.workPhoneNumber}</td>
-                            <td>${currentEmployee.homePhoneNumber}</td>
+                            <td>${employee.position}</td>
+                            <td>${employee.fullName}</td>
+                            <td>${employee.email}</td>
+                            <td>${employee.workPhoneNumber}</td>
+                            <td>${employee.homePhoneNumber}</td>
                             <td>
                                 <div>
-                                    <form action="/provider/${providerForm.id}/edit/employee/${currentEmployee.id}"
+                                    <form action="/provider/${providerForm.id}/edit/employee/${employee.id}"
                                           method="get">
                                         <button type="submit" class="btn btn-primary">Изменить</button>
                                     </form>
-                                    <form action="/provider/${providerForm.id}/edit/employee/${currentEmployee.id}/delete"
+                                    <form action="/provider/${providerForm.id}/edit/employee/${employee.id}/delete"
                                           method="post">
                                         <button type="submit" class="btn btn-primary">Удалить</button>
                                     </form>
@@ -187,11 +177,11 @@
                         </c:when>
                         <%-- Режим просмотра --%>
                         <c:otherwise>
-                            <td>${currentEmployee.position}</td>
-                            <td>${currentEmployee.fullName}</td>
-                            <td>${currentEmployee.email}</td>
-                            <td>${currentEmployee.workPhoneNumber}</td>
-                            <td>${currentEmployee.homePhoneNumber}</td>
+                            <td>${employee.position}</td>
+                            <td>${employee.fullName}</td>
+                            <td>${employee.email}</td>
+                            <td>${employee.workPhoneNumber}</td>
+                            <td>${employee.homePhoneNumber}</td>
                             <td></td>
                         </c:otherwise>
                     </c:choose>
@@ -241,13 +231,13 @@
             <ul class="nav nav-pills navbar-right">
                 <c:choose>
                     <c:when test="${editingMode}">
-                        <li class="active">
-                            <a href="/provider/${providerForm.id}/edit/info">
-                                Редактировать информацию о поставщике
-                            </a>
-                        </li>
-                    </c:when>
-                    <c:when test="${providerEditing}">
+                        <%--<li class="active">--%>
+                            <%--<a href="/provider/${providerForm.id}/edit/info">--%>
+                                <%--Редактировать информацию о поставщике--%>
+                            <%--</a>--%>
+                        <%--</li>--%>
+                    <%--</c:when>--%>
+                    <%--<c:when test="${providerEditing}">--%>
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                             <button type="button" onclick="history.back()" class="btn">Отменить</button>
@@ -260,7 +250,7 @@
                 <tbody>
                 <c:choose>
                     <%-- Режим редактирования --%>
-                    <c:when test="${providerEditing}">
+                    <c:when test="${editingMode}">
                         <tr>
                             <td>Поставщик</td>
                             <td><form:input class="form-control" path="name"/></td>
@@ -354,7 +344,6 @@
             <tr>
                 <th>#</th>
                 <th>Наименование</th>
-                <th>Стоимость</th>
                 <th>Комментарий</th>
                 <th/>
             </tr>
@@ -364,7 +353,6 @@
                 <tr id="tr${product.id}">
                     <td><a href="/product/${product.id}">${productStatus.index + 1}</a></td>
                     <td><c:out value="${product.name}"/></td>
-                    <td><c:out value="${product.price}"/></td>
                     <td><c:out value="${product.note}"/></td>
                     <c:choose>
                         <c:when test="${productUnbindingMode}">
@@ -409,7 +397,6 @@
                     </td>
                         <%-- Показать информацию о выбранном оборудовании --%>
                     <td><c:out value="${selectedProduct.name}"/></td>
-                    <td><c:out value="${selectedProduct.price}"/></td>
                     <td><c:out value="${selectedProduct.note}"/></td>
                     <td>
                         <c:if test="${not empty selectedProduct}">

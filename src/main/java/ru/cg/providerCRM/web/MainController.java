@@ -29,8 +29,7 @@ public class MainController {
     public ProviderService providerService;
     @Autowired
     private ProducerService producerService;
-    @Autowired
-    private TagService tagService;
+
     @Autowired
     public DocumentService documentService;
 

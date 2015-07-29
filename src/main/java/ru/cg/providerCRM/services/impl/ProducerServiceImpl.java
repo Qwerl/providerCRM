@@ -3,12 +3,13 @@ package ru.cg.providerCRM.services.impl;
 import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.cg.providerCRM.entity.*;
-import ru.cg.providerCRM.repository.*;
+import ru.cg.providerCRM.entity.Employee;
+import ru.cg.providerCRM.entity.Producer;
+import ru.cg.providerCRM.entity.Provider;
+import ru.cg.providerCRM.repository.ProducerRepository;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProducerService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,19 +56,6 @@ public class ProducerServiceImpl implements ProducerService {
         producer.addEmployee(employee);
         producerRepository.saveAndFlush(producer);
     }
-
-    public List<Producer> getProducersContainsTag(Tag tag) {
-        List<Producer> producers = producerRepository.findAll();
-        List<Producer> result = new ArrayList<Producer>();
-        for (Producer producer : producers) {
-            List<Tag> tags = producer.getTags();
-            if (tags.contains(tag)) {
-                result.add(producer);
-            }
-        }
-        return result;
-    }
-
 
     public void deleteEmployee(Long employeeId, Long producerId) {
         Employee employee = employeeService.getById(employeeId);

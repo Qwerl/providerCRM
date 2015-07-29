@@ -31,9 +31,6 @@ public class Producer {
     @ManyToMany
     private List<Provider> providers = new ArrayList<Provider>();
 
-    @ManyToMany
-    private List<Tag> tags = new ArrayList<Tag>();
-
     public void addEmployee(Employee employee) {
         employees.add(employee);
     }
@@ -88,14 +85,6 @@ public class Producer {
 
     public void setProviders(List<Provider> providers) {
         this.providers = providers;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public String getNote() {

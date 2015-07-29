@@ -12,11 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.Employee;
 import ru.cg.providerCRM.entity.Product;
 import ru.cg.providerCRM.entity.Provider;
-import ru.cg.providerCRM.entity.Tag;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProductService;
 import ru.cg.providerCRM.services.ProviderService;
-import ru.cg.providerCRM.services.TagService;
 import ru.cg.providerCRM.validator.ErrorMessage;
 import ru.cg.providerCRM.validator.ValidationResponse;
 import ru.cg.providerCRM.web.form.EmployeeEditForm;
@@ -41,21 +39,16 @@ public class ProviderEditorController {
     public EmployeeService employeeService;
 
     @Autowired
-    public TagService tagService;
-
-    @Autowired
     public ProductService productService;
 
     @InitBinder
     public void initBinder(WebDataBinder b) {
-        b.registerCustomEditor(Tag.class, new TagEditor());
         b.registerCustomEditor(Product.class, new ProductEditor());
     }
 
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
     public ModelAndView displayProviderRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProvider");
-        modelAndView.addObject("tags", tagService.getAllTags());
         modelAndView.addObject("providerForm", new ProviderForm());
         return modelAndView;
     }
@@ -64,7 +57,6 @@ public class ProviderEditorController {
     public ModelAndView addNewProvider(@Valid ProviderForm providerForm, BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("addNewProvider");
-            modelAndView.addObject("tags", tagService.getAllTags());
             return modelAndView;
         } else {
             Provider provider = new Provider();
@@ -90,7 +82,6 @@ public class ProviderEditorController {
         Provider provider = providerService.getById(providerId);
         modelAndView.addObject("providerForm", new ProviderForm(provider));
         modelAndView.addObject("editingMode", true);
-        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
         return modelAndView;
     }
 
@@ -100,8 +91,6 @@ public class ProviderEditorController {
         Provider provider = providerService.getById(providerId);
         modelAndView.addObject("providerEditing", true);
         modelAndView.addObject("providerForm", new ProviderForm(provider));
-
-        modelAndView.addObject("otherTags", ListUtils.subtract(tagService.getAllTags(), provider.getTags()));
         return modelAndView;
     }
 
@@ -290,21 +279,6 @@ public class ProviderEditorController {
     private void addProducts(ModelAndView modelAndView, Long providerId) {
         Provider provider = providerService.getById(providerId);
         modelAndView.addObject("products", provider.getProducts());
-    }
-
-    //todo
-    private class TagEditor extends PropertyEditorSupport {
-
-        @Override
-        public void setAsText(String text) throws IllegalArgumentException {
-            setValue(tagService.getByName(text));
-        }
-
-        @Override
-        public String getAsText() {
-            return ((Tag) getValue()).getTagText();
-        }
-
     }
 
     private class ProductEditor extends PropertyEditorSupport {

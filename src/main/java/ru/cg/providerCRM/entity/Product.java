@@ -14,9 +14,6 @@ public class Product {
     @Column(name = "NAME")
     private String name;
 
-    @Column(name = "PRICE")
-    private Long price;
-
     @Column(name = "NOTE")
     private String note;
 
@@ -36,14 +33,6 @@ public class Product {
         this.name = name;
     }
 
-    public Long getPrice() {
-        return price;
-    }
-
-    public void setPrice(Long price) {
-        this.price = price;
-    }
-
     public String getNote() {
         return note;
     }
@@ -59,17 +48,14 @@ public class Product {
 
         Product product = (Product) o;
 
-        if (!id.equals(product.id)) return false;
-        if (!name.equals(product.name)) return false;
-        return !(price != null ? !price.equals(product.price) : product.price != null);
-
+        if (id != null ? !id.equals(product.id) : product.id != null) return false;
+        return !(name != null ? !name.equals(product.name) : product.name != null);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + (price != null ? price.hashCode() : 0);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 
@@ -78,7 +64,7 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", price=" + price +
+                ", note='" + note + '\'' +
                 '}';
     }
 }

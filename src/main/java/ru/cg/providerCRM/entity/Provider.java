@@ -35,9 +35,6 @@ public class Provider {
     private List<Document> documents = new ArrayList<Document>();
 
     @ManyToMany
-    private List<Tag> tags = new ArrayList<Tag>();
-
-    @ManyToMany
     private List<Product> products = new ArrayList<Product>();
 
     public void addDocument(Document document) {
@@ -102,14 +99,6 @@ public class Provider {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public List<Product> getProducts() {

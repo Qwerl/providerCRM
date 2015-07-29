@@ -11,7 +11,6 @@ public interface ProviderService {
     Provider getByName(String name);
     List<Provider> getAllProviders();
     List<Product> getAllProductsByProviderName(String providerName);
-    List<Provider> getProvidersContainsTag(Tag tag);
     void addEmployee(Employee employee, Long providerId);
     void deleteEmployee(Long employeeId, Long providerId);
     void addDocument(Document document, Long providerId);

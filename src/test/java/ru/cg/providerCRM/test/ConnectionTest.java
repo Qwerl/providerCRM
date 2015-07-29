@@ -30,26 +30,18 @@ public class ConnectionTest {
         }
 
 
-        Tag firstTag = new Tag();
-        firstTag.setTagText("firstTag");
-        session.save(firstTag);
 
-        Tag secondTag = new Tag();
-        secondTag.setTagText("secondTag");
-        session.save(secondTag);
 
 
         Product table = new Product();
         table.setName("Стол");
-        table.setPrice(150500L);
         session.save(table);
 
         Provider provider = new Provider();
         provider.setName("TestProvider");
         provider.setAddress("Test address55");
         provider.setPhoneNumber("111-111-111");
-        provider.setStorageAddress("Test storage address");
-        provider.setTags(Arrays.asList(firstTag));
+        provider.setStorageAddress("Test storage address");;
         List<Product> products = Arrays.asList(table);
         provider.setProducts(products);
         provider.setNote("test note provider");
@@ -59,7 +51,6 @@ public class ConnectionTest {
         producer.setName("TestProducer");
         producer.setAddress("Test producer address66");
         producer.setPhoneNumber("888-888-888");
-        producer.setTags(Arrays.asList(secondTag, firstTag));
         producer.setNote("test note producer");
         session.save(producer);
         producer.setProviders(Arrays.asList(provider));

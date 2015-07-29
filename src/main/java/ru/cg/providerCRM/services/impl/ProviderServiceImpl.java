@@ -3,14 +3,16 @@ package ru.cg.providerCRM.services.impl;
 import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.cg.providerCRM.entity.*;
+import ru.cg.providerCRM.entity.Document;
+import ru.cg.providerCRM.entity.Employee;
+import ru.cg.providerCRM.entity.Product;
+import ru.cg.providerCRM.entity.Provider;
 import ru.cg.providerCRM.repository.DocumentRepository;
 import ru.cg.providerCRM.repository.ProductRepository;
 import ru.cg.providerCRM.repository.ProviderRepository;
 import ru.cg.providerCRM.services.EmployeeService;
 import ru.cg.providerCRM.services.ProviderService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,18 +70,6 @@ public class ProviderServiceImpl implements ProviderService {
     public void deleteEmployee(Long employeeId, Long providerId) {
         Employee employee = employeeService.getById(employeeId);
         employeeService.deleteEmployee(employee);
-    }
-
-    public List<Provider> getProvidersContainsTag(Tag tag) {
-        List<Provider> providers = providerRepository.findAll();
-        List<Provider> result = new ArrayList<Provider>();
-        for (Provider provider : providers) {
-            List<Tag> tags = provider.getTags();
-            if (tags.contains(tag)) {
-                result.add(provider);
-            }
-        }
-        return result;
     }
 
     public void addDocument(Document newDocument, Long providerId) {

@@ -3,7 +3,6 @@ package ru.cg.providerCRM.web.form;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Producer;
 import ru.cg.providerCRM.entity.Provider;
-import ru.cg.providerCRM.entity.Tag;
 
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
@@ -31,8 +30,6 @@ public class ProducerForm {
 
     private List<Provider> providers = new ArrayList<Provider>();
 
-    private List<Tag> tags = new ArrayList<Tag>();
-
     public ProducerForm() {
     }
 
@@ -43,7 +40,6 @@ public class ProducerForm {
         this.phoneNumber = producer.getPhoneNumber();
         this.note = producer.getNote();
         this.providers = producer.getProviders();
-        this.tags = producer.getTags();
     }
 
     public void fillProducer(Producer producer) {
@@ -52,7 +48,6 @@ public class ProducerForm {
         producer.setPhoneNumber(phoneNumber);
         producer.setNote(note);
         producer.setProviders(providers);
-        producer.setTags(tags);
     }
 
     public Long getId() {
@@ -103,14 +98,6 @@ public class ProducerForm {
         this.providers = providers;
     }
 
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
-
     @Override
     public String toString() {
         return "ProducerForm{" +
@@ -120,7 +107,6 @@ public class ProducerForm {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", note='" + note + '\'' +
                 ", providers=" + providers +
-                ", tags=" + tags +
                 '}';
     }
 
