@@ -83,11 +83,11 @@
                             <td>${employee.homePhoneNumber}</td>
                             <td>
                                 <div>
-                                    <form action="${pageContext.request.contextPath}/producer/${producerForm.id}/edit/employee/${employee.id}"
+                                    <form action="/producer/${producerForm.id}/edit/employee/${employee.id}"
                                           method="get">
                                         <button class="btn btn-primary">Изменить</button>
                                     </form>
-                                    <form action="${pageContext.request.contextPath}/producer/${producerForm.id}/edit/employee/${employee.id}/delete"
+                                    <form action="/producer/${producerForm.id}/edit/employee/${employee.id}/delete"
                                           method="post">
                                         <button class="btn btn-primary">Удалить</button>
                                     </form>
@@ -165,7 +165,7 @@
     <div class="producer table">
         <br/>
 
-        <form:form action="${pageContext.request.contextPath}/producer/${producerForm.id}/edit" method="post" commandName="producerForm">
+        <form:form action="/producer/${producerForm.id}/edit" method="post" commandName="producerForm">
             <table class="table table-striped">
                 <tbody>
 

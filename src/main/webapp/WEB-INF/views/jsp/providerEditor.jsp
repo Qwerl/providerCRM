@@ -364,21 +364,10 @@
                 <tr id="selector" style="border: solid 2px #ddd">
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <button type="button" onclick="getOtherProducts()" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                 Существующее оборудование <span class="caret"/>
                             </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <c:forEach items="${otherProducts}" var="product">
-                                    <li>
-                                        <a href="javascript: selectProduct(${product.id})">
-                                                ${product.name}
-                                        </a>
-                                    </li>
-                                </c:forEach>
-                                <li class="divider"></li>
-                                <li><a data-toggle="modal" data-target="#productRegistrationModal">Добавить новое
-                                    оборудование</a></li>
-                            </ul>
+                            <ul id="productCombobox" class="dropdown-menu" role="menu"></ul>
                         </div>
                     </td>
                         <%-- Показать информацию о выбранном оборудовании --%>
@@ -527,6 +516,34 @@
             data[$item.attr('name')] = $item.val();
         }
         return data;
+    }
+
+    function getOtherProducts() {
+        $.ajax({
+            type: 'POST',
+            url: '/provider/${providerForm.provider.id}/edit/getOtherProducts',
+            dataType: 'json',
+            async: true,
+
+            success: function(response) {
+                var html = '';
+                var len = response.length;
+
+                for ( var i = 0; i < len; i++) {
+                    html += '\<li\>' +
+                    '\<a href=\"javascript: selectProduct('+ response[i].id +')">' +
+                    response[i].name +
+                    '<\/a>' +
+                    '<\/li>';
+                }
+                html += '<li class="divider"></li> <li><a data-toggle="modal" data-target="#productRegistrationModal">Добавить новоеоборудование</a></li>';
+
+                $('#productCombobox').html(html);
+            },
+            error: function(e) {
+                alert('Error: ' + e);
+            }
+        });
     }
 
     $(document).ready(function () {

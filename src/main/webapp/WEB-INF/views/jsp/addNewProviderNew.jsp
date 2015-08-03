@@ -293,14 +293,6 @@
       </tr>
       </tbody>
     </table>
-
-    <ul class="nav nav-pills navbar-right">
-      <li class="active">
-        <a href="javascript: addNewEmployee()">
-          тест
-        </a>
-      </li>
-    </ul>
   </div>
 </div>
 
@@ -382,7 +374,7 @@
   var unbindEmployee = function (employeeId, employeeTableId) {
     $.ajax({
       type: 'POST',
-      url: '/provider/${providerForm.provider.id}/edit/employees/' + employeeId + '/unbind',
+      url: '/provider/0/edit/employees/' + employeeId + '/unbind',
       dataType: 'json',
       async: true,
       success: function () {

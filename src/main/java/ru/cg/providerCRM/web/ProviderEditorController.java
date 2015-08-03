@@ -37,7 +37,6 @@ public class ProviderEditorController {
     @Autowired
     public ProducerService producerService;
 
-    @Deprecated
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
     public ModelAndView displayProviderRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProviderNew");
@@ -77,12 +76,14 @@ public class ProviderEditorController {
 
             if (employees != null) {
                 for (EmployeeEditForm employeeEditForm : employees) {
-                    employeeEditForm.setProviderId(provider.getId());
-                    employeeService.updateEmployee(
-                            EmployeeFormToEmployee(
-                                    employeeEditForm, providerService, producerService
-                            )
-                    );
+                    if (!employeeEditForm.getIsUnbound()) {
+                        employeeEditForm.setProviderId(provider.getId());
+                        employeeService.updateEmployee(
+                                EmployeeFormToEmployee(
+                                        employeeEditForm, providerService, producerService
+                                )
+                        );
+                    }
                 }
             }
 
@@ -121,8 +122,7 @@ public class ProviderEditorController {
     @RequestMapping(value = "/provider/{providerId}/edit", method = RequestMethod.POST)
     @ResponseBody
     public ValidationResponse ajaxProviderEditingFormValidator(@PathVariable("providerId") Long providerId,
-                                                               @ModelAttribute("providerForm")
-                                                               @Valid ProviderEditingForm providerForm,
+                                                               @ModelAttribute("providerForm") @Valid ProviderEditingForm providerForm,
                                                                BindingResult result) {
         ValidationResponse res = new ValidationResponse();
         if (result.hasErrors()) {
@@ -134,16 +134,17 @@ public class ProviderEditorController {
             providerService.updateProvider(provider);
 
             List<EmployeeEditForm> employeeEditForms = providerForm.getEmployees();
-            for (EmployeeEditForm employeeEditForm : employeeEditForms) {
-                if (!employeeEditForm.getIsUnbound()) {
-                    employeeService.updateEmployee(
-                            EmployeeFormToEmployee(
-                                    employeeEditForm, providerService, producerService
-                            )
-                    );
+            if (employeeEditForms != null) {
+                for (EmployeeEditForm employeeEditForm : employeeEditForms) {
+                    if (!employeeEditForm.getIsUnbound()) {
+                        employeeService.updateEmployee(
+                                EmployeeFormToEmployee(
+                                        employeeEditForm, providerService, producerService
+                                )
+                        );
+                    }
                 }
             }
-
             res.setStatus("SUCCESS");
         }
         return res;
@@ -231,6 +232,15 @@ public class ProviderEditorController {
         res.setStatus("SUCCESS");
         return res;
     }
+
+    @RequestMapping(value = "/provider/{providerId}/edit/getOtherProducts", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Product> getProducts(@PathVariable("providerId") Long providerId) {
+        Provider provider = providerService.getById(providerId);
+        List<Product> products = productService.getProductsNotIn(provider.getProducts());
+        return products;
+    }
+
 
     private List<ErrorMessage> getErrorMessages(List<FieldError> allErrors) {
         List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
