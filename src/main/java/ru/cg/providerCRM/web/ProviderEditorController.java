@@ -1,31 +1,24 @@
 package ru.cg.providerCRM.web;
 
-import org.apache.commons.collections.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.cg.providerCRM.entity.Employee;
 import ru.cg.providerCRM.entity.Product;
 import ru.cg.providerCRM.entity.Provider;
-import ru.cg.providerCRM.services.EmployeeService;
-import ru.cg.providerCRM.services.ProductService;
-import ru.cg.providerCRM.services.ProviderService;
-import ru.cg.providerCRM.validator.ErrorMessage;
-import ru.cg.providerCRM.validator.ValidationResponse;
-import ru.cg.providerCRM.web.form.EmployeeEditForm;
-import ru.cg.providerCRM.web.form.EmployeeRegistrationForm;
-import ru.cg.providerCRM.web.form.ProductRegisterForm;
-import ru.cg.providerCRM.web.form.ProviderForm;
+import ru.cg.providerCRM.services.*;
+import ru.cg.providerCRM.web.response.*;
+import ru.cg.providerCRM.web.form.*;
 
 import javax.validation.Valid;
-import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.cg.providerCRM.services.FormToEntityConverter.EmployeeFormToEmployee;
 
 @Controller
 @Scope("request")
@@ -41,26 +34,26 @@ public class ProviderEditorController {
     @Autowired
     public ProductService productService;
 
-    @InitBinder
-    public void initBinder(WebDataBinder b) {
-        b.registerCustomEditor(Product.class, new ProductEditor());
-    }
+    @Autowired
+    public ProducerService producerService;
 
+    @Deprecated
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
     public ModelAndView displayProviderRegisterForm() {
         ModelAndView modelAndView = new ModelAndView("addNewProvider");
-        modelAndView.addObject("providerForm", new ProviderForm());
+        modelAndView.addObject("providerForm", new ProviderInfoForm());
         return modelAndView;
     }
 
+    @Deprecated
     @RequestMapping(value = "/provider/add", method = RequestMethod.POST)
-    public ModelAndView addNewProvider(@Valid ProviderForm providerForm, BindingResult result) {
+    public ModelAndView addNewProvider(@Valid ProviderInfoForm providerInfoForm, BindingResult result) {
         if (result.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("addNewProvider");
             return modelAndView;
         } else {
             Provider provider = new Provider();
-            providerForm.fillProvider(provider);
+            providerInfoForm.fillProvider(provider);
             providerService.addProvider(provider);
             return new ModelAndView("redirect:/provider/" + provider.getId());
         }
@@ -70,145 +63,106 @@ public class ProviderEditorController {
     public ModelAndView providerFullInfo(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = new ModelAndView("providerEditor");
         Provider provider = providerService.getById(providerId);
-        modelAndView.addObject("providerForm", new ProviderForm(provider));
-        addEmployees(modelAndView, providerId);
-        addProducts(modelAndView, providerId);
+
+        ProviderEditingForm form = new ProviderEditingForm();
+        form.setEmployees(getEmployeeEditForms(provider));
+        form.setProvider(new ProviderInfoForm(provider));
+        form.setProducts(provider.getProducts());
+
+        /* ToDo: перенести на AJAX */
+        modelAndView.addObject("otherProducts", productService.getProductsNotIn(provider.getProducts()));
+
+        modelAndView.addObject("employeeForm", new EmployeeRegistrationForm());
+        modelAndView.addObject("productForm", new ProductRegistrationForm());
+        modelAndView.addObject("providerForm", form);
         return modelAndView;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit", method = RequestMethod.GET)
+    @RequestMapping(value = "/provider/{providerId}/edit", method = RequestMethod.GET)
     public ModelAndView enableEditingMode(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = providerFullInfo(providerId);
-        Provider provider = providerService.getById(providerId);
-        modelAndView.addObject("providerForm", new ProviderForm(provider));
         modelAndView.addObject("editingMode", true);
         return modelAndView;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/info", method = RequestMethod.GET)
-    public ModelAndView editProviderForm(@PathVariable("providerId") Long providerId) {
-        ModelAndView modelAndView = providerFullInfo(providerId);
-        Provider provider = providerService.getById(providerId);
-        modelAndView.addObject("providerEditing", true);
-        modelAndView.addObject("providerForm", new ProviderForm(provider));
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/info", method = RequestMethod.POST)
-    public ModelAndView updateProvider(@PathVariable("providerId") Long providerId,
-                                       @ModelAttribute(value = "providerForm") @Valid ProviderForm providerForm,
-                                       BindingResult result) {
-        providerForm.setId(providerId);
+    @RequestMapping(value = "/provider/{providerId}/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public ValidationResponse ajaxProviderEditingFormValidator(@PathVariable("providerId") Long providerId,
+                                                               @ModelAttribute("providerForm")
+                                                               @Valid ProviderEditingForm providerForm,
+                                                               BindingResult result) {
+        ValidationResponse res = new ValidationResponse();
         if (result.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView("providerEditor");
-            modelAndView.addObject("providerEditing", true);
-            addProducts(modelAndView, providerId);
-            addEmployees(modelAndView, providerId);
-            return modelAndView;
+            res.setStatus("FAIL");
+            res.setErrorMessageList(getErrorMessages(result.getFieldErrors()));
         } else {
             Provider provider = providerService.getById(providerId);
-            providerForm.fillProvider(provider);
+            providerForm.getProvider().fillProvider(provider);
             providerService.updateProvider(provider);
-            return new ModelAndView("redirect:/provider/" + provider.getId());
+
+            List<EmployeeEditForm> employeeEditForms = providerForm.getEmployees();
+            for (EmployeeEditForm employeeEditForm : employeeEditForms) {
+                if (!employeeEditForm.getIsUnbound()) {
+                    employeeService.updateEmployee(
+                            EmployeeFormToEmployee(
+                                    employeeEditForm, providerService, producerService
+                            )
+                    );
+                }
+            }
+
+            res.setStatus("SUCCESS");
         }
+        return res;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.GET)
-    public ModelAndView enableEmployeeAddingMode(@PathVariable("providerId") Long providerId) {
-        ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("employeeAddingMode", true);
-        modelAndView.addObject("employeeForm", new EmployeeRegistrationForm());
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/addEmployee", method = RequestMethod.POST)
-    public ModelAndView addEmployeeToProvider(@PathVariable("providerId") Long providerId,
-                                              @ModelAttribute("employeeForm") @Valid EmployeeRegistrationForm employeeRegistrationForm,
-                                              BindingResult result) {
+    @RequestMapping(value = "/provider/{providerId}/edit/employees/validateNew", method = RequestMethod.POST)
+    @ResponseBody
+    public ValidationResponse validateEmployeeForm(@PathVariable("providerId") Long providerId,
+                                                   @ModelAttribute("employeeForm") @Valid EmployeeRegistrationForm form,
+                                                   BindingResult result) {
+        ValidationResponse res = new ValidationResponse();
         if (result.hasErrors()) {
-            ModelAndView modelAndView = providerFullInfo(providerId);
-            modelAndView.addObject("employeeAddingMode", true);
-            return modelAndView;
+            res.setStatus("FAIL");
+            res.setErrorMessageList(getErrorMessages(result.getFieldErrors()));
         } else {
             Employee employee = new Employee();
-            employeeRegistrationForm.fillEmployee(employee);
+            form.fillEmployee(employee);
             employee.setProvider(providerService.getById(providerId));
             employeeService.addEmployee(employee);
-            return new ModelAndView("redirect:/provider/" + providerId);
+            res = new EmployeeResponse(employee);
+            res.setStatus("SUCCESS");
         }
+        return res;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/employee", method = RequestMethod.GET)
-    public ModelAndView enableEmployeesEditing(@PathVariable("providerId") Long providerId) {
-        ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("employeesEditing", true);
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId}", method = RequestMethod.GET)
-    public ModelAndView selectEmployeeToEdit(@PathVariable("providerId") Long providerId,
-                                             @PathVariable("employeeId") String employeeId) {
-        ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("employeesEditing", true);
-        modelAndView.addObject("editableEmployeeId", employeeId);
-        modelAndView.addObject("employeeForm", new EmployeeEditForm(employeeService.getById(Long.parseLong(employeeId))));
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId}/delete", method = RequestMethod.POST)
-    public ModelAndView deleteEmployee(@PathVariable("providerId") Long providerId,
-                                       @PathVariable("employeeId") Long employeeId) {
-        providerService.deleteEmployee(employeeId, providerId);
-        return new ModelAndView("redirect:/provider/" + providerId + "/edit/employee");
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/employee/{employeeId:.+}", method = RequestMethod.POST)
-    public ModelAndView updateEmployee(@PathVariable("providerId") Long providerId,
-                                       @PathVariable("employeeId") Long employeeId,
-                                       @ModelAttribute("employeeForm") @Valid EmployeeEditForm employeeForm,
-                                       BindingResult result) {
-        employeeForm.setId(employeeId);
-        if (result.hasErrors()) {
-            ModelAndView modelAndView = providerFullInfo(providerId);
-            modelAndView.addObject("employeeAddingMode", false);
-            modelAndView.addObject("editableEmployeeId", employeeId);
-            return modelAndView;
-        } else {
-            Employee employee = employeeForm.getEmployee();
-            employee.setProvider(providerService.getById(providerId));
-            employeeService.updateEmployee(employee);
-            return new ModelAndView("redirect:/provider/" + providerId);
-        }
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products", method = RequestMethod.GET)
-    public ModelAndView enableProductsEditing(@PathVariable("providerId") Long providerId) {
-        ModelAndView modelAndView = providerFullInfo(providerId);
-        modelAndView.addObject("productEditing", true);
-        modelAndView.addObject("productForm", new ProductRegisterForm());
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/edit", method = RequestMethod.GET)
-    public ModelAndView editProduct(@PathVariable("providerId") Long providerId) {
-        ModelAndView modelAndView = enableProductsEditing(providerId);
-        modelAndView.addObject("productUnbindingMode", true);
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/edit/{productId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/provider/{providerId}/edit/employees/{employeeId}/unbind", method = RequestMethod.POST)
     @ResponseBody
-    public Object unbindProduct(@PathVariable("providerId") Long providerId,
-                                @PathVariable("productId") Long productId) {
+    public Response unbindEmployee(@PathVariable("providerId") Long providerId,
+                                   @PathVariable("employeeId") Long employeeId) {
+        Response res = new Response();
+        Employee employee = employeeService.getById(employeeId);
+        employee.setProvider(null);
+        employeeService.updateEmployee(employee);
+        res.setStatus("SUCCESS");
+        return res;
+    }
+
+    @RequestMapping(value = "/provider/{providerId}/edit/products/edit/{productId}", method = RequestMethod.POST)
+    @ResponseBody
+    public ValidationResponse unbindProduct(@PathVariable("providerId") Long providerId,
+                                            @PathVariable("productId") Long productId) {
+        ValidationResponse res = new ValidationResponse();
         providerService.deleteProduct(productId, providerId);
-        return new ErrorMessage("status", "SUCCESS");
+        res.setStatus("SUCCESS");
+        return res;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/validateNew", method = RequestMethod.POST)
+    @RequestMapping(value = "/provider/{providerId}/edit/products/validateNew", method = RequestMethod.POST)
     @ResponseBody
-    public ValidationResponse processProductForm(@PathVariable("providerId") Long providerId,
-                                                 @ModelAttribute("productForm") @Valid ProductRegisterForm form,
-                                                 BindingResult result) {
+    public ValidationResponse validateProductForm(@PathVariable("providerId") Long providerId,
+                                                  @ModelAttribute("productForm") @Valid ProductRegistrationForm form,
+                                                  BindingResult result) {
         ValidationResponse res = new ValidationResponse();
         if (result.hasErrors()) {
             res.setStatus("FAIL");
@@ -221,77 +175,53 @@ public class ProviderEditorController {
         return res;
     }
 
-    private List<ErrorMessage> getErrorMessages(List<FieldError> allErrors) {
-        List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
-        for (FieldError objectError : allErrors) {
-            errorMessages.add(new ErrorMessage(objectError.getField(), objectError.getDefaultMessage()));
-        }
-        return errorMessages;
-    }
-
-    /* ToDo: возможно стоит  */
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/addProduct", method = RequestMethod.POST)
-    public ModelAndView productAddingEnd(@PathVariable("providerId") Long providerId,
-                                         @ModelAttribute("productForm") @Valid ProductRegisterForm form,
-                                         BindingResult result) {
-        if (result.hasErrors()) {
-            System.out.println("JS отключен");
-            return enableProductsEditing(providerId);
-        } else {
-            return enableProductsEditing(providerId);
-        }
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/add", method = RequestMethod.GET)
-    public ModelAndView productsAddingForm(@PathVariable("providerId") Long providerId) {
-        ModelAndView modelAndView = enableProductsEditing(providerId);
-        Provider provider = providerService.getById(providerId);
-        modelAndView.addObject("productAddingMode", true);
-        modelAndView.addObject("otherProducts", ListUtils.subtract(productService.getAllProduct(), provider.getProducts()));
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/add/{productId}", method = RequestMethod.GET)
-    public ModelAndView selectProduct(@PathVariable("providerId") Long providerId,
-                                      @PathVariable("productId") Long productId) {
-        ModelAndView modelAndView = productsAddingForm(providerId);
+    @RequestMapping(value = "/provider/{providerId}/edit/products/{productId}", method = RequestMethod.POST)
+    @ResponseBody
+    public ProductResponse selectProduct(@PathVariable("providerId") Long providerId,
+                                         @PathVariable("productId") Long productId) {
         Product selectedProduct = productService.getById(productId);
-        modelAndView.addObject("selectedProduct", selectedProduct);
-        return modelAndView;
+        ProductResponse res = new ProductResponse(selectedProduct);
+        res.setStatus("SUCCESS");
+        return res;
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}/edit/products/add/{productId}", method = RequestMethod.POST)
-    public ModelAndView selectProductSubmit(@PathVariable("providerId") Long providerId,
-                                            @PathVariable("productId") Long productId) {
+    @RequestMapping(value = "/provider/{providerId}/edit/products/add/{productId}", method = RequestMethod.POST)
+    @ResponseBody
+    public ProductResponse bindProduct(@PathVariable("providerId") Long providerId,
+                                       @PathVariable("productId") Long productId) {
         Provider provider = providerService.getById(providerId);
         Product selectedProduct = productService.getById(productId);
         provider.getProducts().add(selectedProduct);
         providerService.updateProvider(provider);
-        return new ModelAndView("redirect:/provider/" + provider.getId() + "/edit/products/add");
+
+        ProductResponse res = new ProductResponse(selectedProduct);
+        res.setStatus("SUCCESS");
+        return res;
     }
 
-
-    private void addEmployees(ModelAndView modelAndView, Long providerId) {
-        Provider provider = providerService.getById(providerId);
-        modelAndView.addObject("employees", provider.getEmployees());
+    private List<ErrorMessage> getErrorMessages(List<FieldError> allErrors) {
+        List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>();
+        for (FieldError objectError : allErrors) {
+            errorMessages.add(
+                    new ErrorMessage(
+                            objectError.getField().replace("[", "\\[")
+                                    .replace("]", "\\]")
+                                    .replace(".", "\\."),
+                            objectError.getDefaultMessage()
+                    )
+            );
+        }
+        return errorMessages;
     }
 
-    private void addProducts(ModelAndView modelAndView, Long providerId) {
-        Provider provider = providerService.getById(providerId);
-        modelAndView.addObject("products", provider.getProducts());
-    }
+    private List<EmployeeEditForm> getEmployeeEditForms(Provider provider) {
+        List<EmployeeEditForm> employeeForms = new ArrayList<>();
+        List<Employee> employees = provider.getEmployees();
 
-    private class ProductEditor extends PropertyEditorSupport {
-
-        @Override
-        public void setAsText(String text) throws IllegalArgumentException {
-            setValue(productService.getByName(text));
+        for (Employee employee : employees) {
+            employeeForms.add(new EmployeeEditForm(employee));
         }
 
-        @Override
-        public String getAsText() {
-            return ((Product) getValue()).getName();
-        }
-
+        return employeeForms;
     }
 }

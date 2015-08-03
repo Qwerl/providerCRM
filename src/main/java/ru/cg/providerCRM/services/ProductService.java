@@ -9,4 +9,5 @@ public interface ProductService {
     Product getByName(String name);
     List<Product> getAllProduct();
     void addProduct(Product product);
+    List<Product> getProductsNotIn(List<Product> products);
 }

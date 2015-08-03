@@ -1,4 +1,4 @@
-package ru.cg.providerCRM.validator;
+package ru.cg.providerCRM.web.response;
 
 public class ErrorMessage {
 

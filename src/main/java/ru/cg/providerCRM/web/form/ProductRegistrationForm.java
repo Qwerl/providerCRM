@@ -3,7 +3,7 @@ package ru.cg.providerCRM.web.form;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Product;
 
-public class ProductRegisterForm {
+public class ProductRegistrationForm {
 
     @NotBlank(message = "Наименование не должно быть пустым")
     private String name;
@@ -11,7 +11,7 @@ public class ProductRegisterForm {
     @NotBlank(message = "Примечания не должны быть пустыми")
     private String note;
 
-    public ProductRegisterForm() {
+    public ProductRegistrationForm() {
     }
 
     public Product getProduct(){

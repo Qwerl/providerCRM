@@ -33,6 +33,7 @@ public class EmployeeEditForm {
     @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String position;
 
+    private Boolean isUnbound = false;
 
     private Long providerId;
     private Long producerId;
@@ -57,17 +58,6 @@ public class EmployeeEditForm {
         } else {
             producerId = 0L;
         }
-    }
-
-    public Employee getEmployee() {
-        Employee employee = new Employee();
-        employee.setId(id);
-        employee.setFullName(fullName);
-        employee.setEmail(email);
-        employee.setHomePhoneNumber(homePhoneNumber);
-        employee.setWorkPhoneNumber(workPhoneNumber);
-        employee.setPosition(position);
-        return employee;
     }
 
     public Long getId() {
@@ -132,6 +122,14 @@ public class EmployeeEditForm {
 
     public void setProducerId(Long producerId) {
         this.producerId = producerId;
+    }
+
+    public Boolean getIsUnbound() {
+        return isUnbound;
+    }
+
+    public void setIsUnbound(Boolean isUnbound) {
+        this.isUnbound = isUnbound;
     }
 
     @Override

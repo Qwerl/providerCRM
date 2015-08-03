@@ -6,7 +6,7 @@ import ru.cg.providerCRM.entity.Provider;
 
 import javax.validation.constraints.Size;
 
-public class ProviderForm {
+public class ProviderInfoForm {
 
     private Long id;
 
@@ -31,10 +31,10 @@ public class ProviderForm {
     private String note;
 
 
-    public ProviderForm() {
+    public ProviderInfoForm() {
     }
 
-    public ProviderForm(Provider provider) {
+    public ProviderInfoForm(Provider provider) {
         this.id = provider.getId();
         this.name = provider.getName();
         this.address = provider.getAddress();
