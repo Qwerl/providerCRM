@@ -11,10 +11,11 @@
     <spring:url value="/resources/core/css/styles2.css" var="coreCss"/>
     <spring:url value="/resources/core/css/bootstrap.min.css" var="bootstrapCss"/>
     <spring:url value="/resources/core/js/bootstrap.min.js" var="bootstrapJs"/>
+    <spring:url value="/resources/core/js/jquery.js" var="jqueryJs"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="${coreCss}">
+    <script src="${jqueryJs}"></script>
+    <link type="text/css" href="${coreCss}" rel="stylesheet"/>
     <link rel="stylesheet" href="${bootstrapCss}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="${bootstrapJs}"></script>
 </head>
 
@@ -47,14 +48,9 @@
             </tr>
             <tr>
                 <td>Примечания</td>
-                <td><form:textarea rows="5" class="form-control" placeholder="Введите примечания" path="note" required="required"/></td>
+                <td><form:input class="form-control" placeholder="Введите примечания" path="note" required="required"/></td>
                 <td><form:errors path="note" cssClass="error"/></td>
             </tr>
-            <%--<tr>--%>
-                <%--<td>Теги</td>--%>
-                <%--<td><form:checkboxes path="tags" items="${tags}"/></td>--%>
-                <%--<td><form:errors path="tags" cssClass="error"/></td>--%>
-            <%--</tr>--%>
             </tbody>
         </table>
         <div class="form-actions">

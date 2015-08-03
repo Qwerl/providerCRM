@@ -154,24 +154,24 @@ public class ProducerEditorController {
         return new ModelAndView("redirect:/producer/" + producerId + "/edit/employee");
     }
 
-    @RequestMapping(value = "/producer/{producerId:.+}/edit/employee/{employeeId}", method = RequestMethod.POST)
-    public ModelAndView updateEmployee(@PathVariable("producerId") String producerId,
-                                       @PathVariable("employeeId") String employeeId,
-                                       @ModelAttribute("employeeForm") @Valid EmployeeEditForm employeeForm,
-                                       BindingResult result) {
-        employeeForm.setId(Long.parseLong(employeeId));
-        if (result.hasErrors()) {
-            ModelAndView modelAndView = producerFullInfo(producerId);
-            modelAndView.addObject("employeeWritePermission", false);
-            modelAndView.addObject("editableEmployeeId", employeeId);
-            return modelAndView;
-        } else {
-            Employee employee = employeeForm.getEmployee();
-            employee.setProducer(producerService.getById(Long.parseLong(producerId)));
-            employeeService.updateEmployee(employee);
-            return new ModelAndView("redirect:/producer/" + producerId);
-        }
-    }
+//    @RequestMapping(value = "/producer/{producerId:.+}/edit/employee/{employeeId}", method = RequestMethod.POST)
+//    public ModelAndView updateEmployee(@PathVariable("producerId") String producerId,
+//                                       @PathVariable("employeeId") String employeeId,
+//                                       @ModelAttribute("employeeForm") @Valid EmployeeEditForm employeeForm,
+//                                       BindingResult result) {
+//        employeeForm.setId(Long.parseLong(employeeId));
+//        if (result.hasErrors()) {
+//            ModelAndView modelAndView = producerFullInfo(producerId);
+//            modelAndView.addObject("employeeWritePermission", false);
+//            modelAndView.addObject("editableEmployeeId", employeeId);
+//            return modelAndView;
+//        } else {
+//            Employee employee = employeeForm.getEmployee();
+//            employee.setProducer(producerService.getById(Long.parseLong(producerId)));
+//            employeeService.updateEmployee(employee);
+//            return new ModelAndView("redirect:/producer/" + producerId);
+//        }
+//    }
 
     private void addEmployees(ModelAndView modelAndView, String producerId) {
         Producer producer = producerService.getById(Long.parseLong(producerId));

@@ -40,26 +40,59 @@ public class ProviderEditorController {
     @Deprecated
     @RequestMapping(value = "/provider/add", method = RequestMethod.GET)
     public ModelAndView displayProviderRegisterForm() {
-        ModelAndView modelAndView = new ModelAndView("addNewProvider");
-        modelAndView.addObject("providerForm", new ProviderInfoForm());
+        ModelAndView modelAndView = new ModelAndView("addNewProviderNew");
+
+        ProviderEditingForm form = new ProviderEditingForm();
+        form.setEmployees(new ArrayList<EmployeeEditForm>());
+
+        Provider provider = new Provider();
+        form.setProvider(new ProviderInfoForm(provider));
+        form.setProducts(new ArrayList<Product>());
+
+        modelAndView.addObject("editingMode", true);
+        modelAndView.addObject("employeeForm", new EmployeeRegistrationForm());
+        modelAndView.addObject("productForm", new ProductRegistrationForm());
+        modelAndView.addObject("providerForm", new ProviderEditingForm());
         return modelAndView;
     }
 
-    @Deprecated
     @RequestMapping(value = "/provider/add", method = RequestMethod.POST)
-    public ModelAndView addNewProvider(@Valid ProviderInfoForm providerInfoForm, BindingResult result) {
+    @ResponseBody
+    public Response addNewProvider(@ModelAttribute("providerForm") @Valid ProviderEditingForm form, BindingResult result) {
         if (result.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView("addNewProvider");
-            return modelAndView;
+            ValidationResponse res = new ValidationResponse();
+            System.out.println("err");
+            res.setErrorMessageList(getErrorMessages(result.getFieldErrors()));
+            res.setStatus("FAIL");
+            return res;
         } else {
+            ProviderResponse res = new ProviderResponse();
+            System.out.println(form);
+
             Provider provider = new Provider();
-            providerInfoForm.fillProvider(provider);
+            form.getProvider().fillProvider(provider);
             providerService.addProvider(provider);
-            return new ModelAndView("redirect:/provider/" + provider.getId());
+
+            List<EmployeeEditForm> employees = form.getEmployees();
+
+            if (employees != null) {
+                for (EmployeeEditForm employeeEditForm : employees) {
+                    employeeEditForm.setProviderId(provider.getId());
+                    employeeService.updateEmployee(
+                            EmployeeFormToEmployee(
+                                    employeeEditForm, providerService, producerService
+                            )
+                    );
+                }
+            }
+
+            res.setId(provider.getId().toString());
+            res.setStatus("SUCCESS");
+            return res;
         }
     }
 
-    @RequestMapping(value = "/provider/{providerId:.+}", method = RequestMethod.GET)
+    @RequestMapping(value = "/provider/{providerId}", method = RequestMethod.GET)
     public ModelAndView providerFullInfo(@PathVariable("providerId") Long providerId) {
         ModelAndView modelAndView = new ModelAndView("providerEditor");
         Provider provider = providerService.getById(providerId);

@@ -2,8 +2,7 @@ package ru.cg.providerCRM.web.response;
 
 import ru.cg.providerCRM.entity.Product;
 
-public class ProductResponse {
-	private String status;
+public class ProductResponse extends Response {
 
 	private String id;
 	private String name;
@@ -17,12 +16,6 @@ public class ProductResponse {
 		note = product.getNote();
 	}
 
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
 	public String getName() {
 		return name;
 	}
