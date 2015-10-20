@@ -60,13 +60,11 @@ public class ProviderEditorController {
     public Response addNewProvider(@ModelAttribute("providerForm") @Valid ProviderEditingForm form, BindingResult result) {
         if (result.hasErrors()) {
             ValidationResponse res = new ValidationResponse();
-            System.out.println("err");
             res.setErrorMessageList(getErrorMessages(result.getFieldErrors()));
             res.setStatus("FAIL");
             return res;
         } else {
             ProviderResponse res = new ProviderResponse();
-            System.out.println(form);
 
             Provider provider = new Provider();
             form.getProvider().fillProvider(provider);
@@ -86,6 +84,18 @@ public class ProviderEditorController {
                     }
                 }
             }
+
+            List<Product> products = form.getProducts();
+            List<Product> productsProvider = new ArrayList<>();
+            if (products != null) {
+                for (Product product : products) {
+                    if (product.getId() != null) {
+                        productsProvider.add(productService.getById(product.getId()));
+                    }
+                }
+            }
+            provider.setProducts(productsProvider);
+            providerService.updateProvider(provider);
 
             res.setId(provider.getId().toString());
             res.setStatus("SUCCESS");

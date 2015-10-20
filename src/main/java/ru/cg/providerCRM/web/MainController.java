@@ -35,7 +35,6 @@ public class MainController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Map<String, Object> model) {
-        System.out.println("ok");
         return "index";
     }
 

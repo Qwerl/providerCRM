@@ -18,7 +18,6 @@ public class FormToEntityConverter {
         if (form.getProviderId() != 0){
             employee.setProvider(providerService.getById(form.getProviderId()));
         } else {
-            System.out.println(form.getProviderId());
             employee.setProvider(null);
         }
 
