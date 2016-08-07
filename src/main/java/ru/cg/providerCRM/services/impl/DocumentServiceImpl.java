@@ -9,8 +9,12 @@ import ru.cg.providerCRM.services.DocumentService;
 @Service
 public class DocumentServiceImpl implements DocumentService {
 
+    private final DocumentRepository documentRepository;
+
     @Autowired
-    private DocumentRepository documentRepository;
+    public DocumentServiceImpl(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
+    }
 
     public Document getById(Long id) {
         return documentRepository.findOne(id);

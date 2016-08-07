@@ -17,14 +17,14 @@
        http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
 
-    <!--<context:property-placeholder location="classpath:app.properties" ignore-resource-not-found="false"/>-->
+    <context:property-placeholder location="classpath:app.properties" ignore-resource-not-found="false"/>
 
     <!-- PostgresSQL DataSource -->
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-        <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://localhost:5432/postgres"/>
-        <property name="username" value="postgres"/>
-        <property name="password" value="root"/>
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
     </bean>
 
     <!-- EntityManager factory -->
@@ -61,5 +61,5 @@
 
     <bean:component-scan base-package="ru.cg.providerCRM.services"/>
 
-    <mvc:annotation-driven />
+    <mvc:annotation-driven/>
 </beans>

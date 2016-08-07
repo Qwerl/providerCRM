@@ -1,8 +1,10 @@
 package ru.cg.providerCRM.web.form;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Product;
 
+@Data
 public class ProductRegistrationForm {
 
     @NotBlank(message = "Наименование не должно быть пустым")
@@ -21,19 +23,4 @@ public class ProductRegistrationForm {
         return product;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
 }

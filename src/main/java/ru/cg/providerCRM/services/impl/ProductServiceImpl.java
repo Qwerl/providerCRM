@@ -12,8 +12,12 @@ import java.util.List;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+    private final ProductRepository productRepository;
+
     @Autowired
-    private ProductRepository productRepository;
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     public Product getById(Long id) {
         return productRepository.findOne(id);
@@ -32,7 +36,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<Product> getProductsNotIn(List<Product> products) {
-
         if (products.isEmpty()) {
             return getAllProduct();
         }
@@ -40,6 +43,8 @@ public class ProductServiceImpl implements ProductService {
         for (Product product : products) {
             productsId.add(product.getId());
         }
+
         return productRepository.findByIdNotIn(productsId);
     }
+
 }

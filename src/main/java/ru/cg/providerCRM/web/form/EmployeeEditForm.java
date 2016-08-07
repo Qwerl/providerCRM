@@ -1,5 +1,6 @@
 package ru.cg.providerCRM.web.form;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Employee;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 /**
  * Класс для редактирования существующих сотрудников
  */
+@Data
 public class EmployeeEditForm {
 
     private Long id;
@@ -58,92 +60,6 @@ public class EmployeeEditForm {
         } else {
             producerId = 0L;
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getHomePhoneNumber() {
-        return homePhoneNumber;
-    }
-
-    public void setHomePhoneNumber(String homePhoneNumber) {
-        this.homePhoneNumber = homePhoneNumber;
-    }
-
-    public String getWorkPhoneNumber() {
-        return workPhoneNumber;
-    }
-
-    public void setWorkPhoneNumber(String workPhoneNumber) {
-        this.workPhoneNumber = workPhoneNumber;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public Long getProviderId() {
-        return providerId;
-    }
-
-    public void setProviderId(Long providerId) {
-        this.providerId = providerId;
-    }
-
-    public Long getProducerId() {
-        return producerId;
-    }
-
-    public void setProducerId(Long producerId) {
-        this.producerId = producerId;
-    }
-
-    public Boolean getIsUnbound() {
-        return isUnbound;
-    }
-
-    public void setIsUnbound(Boolean isUnbound) {
-        this.isUnbound = isUnbound;
-    }
-
-    @Override
-    public String toString() {
-        return "EmployeeEditForm{" +
-                "id=" + id +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", homePhoneNumber='" + homePhoneNumber + '\'' +
-                ", workPhoneNumber='" + workPhoneNumber + '\'' +
-                ", position='" + position + '\'' +
-                ", providerId=" + providerId +
-                ", producerId=" + producerId +
-                '}';
     }
 
 }

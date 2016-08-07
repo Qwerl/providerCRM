@@ -1,10 +1,12 @@
 package ru.cg.providerCRM.web.form;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Producer;
 
 import javax.validation.constraints.Size;
 
+@Data
 public class ProducerInfoForm {
 
     private Long id;
@@ -25,8 +27,6 @@ public class ProducerInfoForm {
     @Size(min = 2, max = 255, message = "Длина должна быть больше 2 символов, но не больше 255")
     private String note;
 
-
-
     public ProducerInfoForm() {
     }
 
@@ -44,59 +44,6 @@ public class ProducerInfoForm {
         producer.setAddress(address);
         producer.setPhoneNumber(phoneNumber);
         producer.setNote(note);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-
-
-    @Override
-    public String toString() {
-        return "ProducerForm{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", note='" + note + '\'' +
-                '}';
     }
 
 }

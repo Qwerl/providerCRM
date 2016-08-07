@@ -18,17 +18,18 @@ import java.util.List;
 @Service
 public class ProviderServiceImpl implements ProviderService {
 
-    @Autowired
-    public ProviderRepository providerRepository;
+    private final ProviderRepository providerRepository;
+    private final EmployeeService employeeService;
+    private final ProductRepository productRepository;
+    private final DocumentRepository documentRepository;
 
     @Autowired
-    public EmployeeService employeeService;
-
-    @Autowired
-    public ProductRepository productRepository;
-
-    @Autowired
-    public DocumentRepository documentRepository;
+    public ProviderServiceImpl(ProductRepository productRepository, DocumentRepository documentRepository, EmployeeService employeeService, ProviderRepository providerRepository) {
+        this.productRepository = productRepository;
+        this.documentRepository = documentRepository;
+        this.employeeService = employeeService;
+        this.providerRepository = providerRepository;
+    }
 
     public void addProvider(Provider provider) {
         providerRepository.saveAndFlush(provider);
@@ -82,7 +83,7 @@ public class ProviderServiceImpl implements ProviderService {
     public List<Provider> getProviderBySpecificText(String text) {
         String textToSearch = "%" + text + "%";
 
-        List providers = providerRepository.findDistinctProviderByNameLikeIgnoreCaseOrNoteLikeIgnoreCaseOrAddressLikeIgnoreCaseOrStorageAddressLikeIgnoreCaseOrProductsNameLikeIgnoreCaseOrEmployeesFullNameLikeOrDocumentsNameLikeIgnoreCase(textToSearch, textToSearch, textToSearch, textToSearch, textToSearch, textToSearch, textToSearch);
+        List<Provider> providers = providerRepository.findDistinctProviderByNameLikeIgnoreCaseOrNoteLikeIgnoreCaseOrAddressLikeIgnoreCaseOrStorageAddressLikeIgnoreCaseOrProductsNameLikeIgnoreCaseOrEmployeesFullNameLikeOrDocumentsNameLikeIgnoreCase(textToSearch, textToSearch, textToSearch, textToSearch, textToSearch, textToSearch, textToSearch);
 
         if (providers == null) {
             return ListUtils.EMPTY_LIST;
@@ -97,4 +98,5 @@ public class ProviderServiceImpl implements ProviderService {
         provider.getProducts().remove(product);
         providerRepository.saveAndFlush(provider);
     }
+
 }

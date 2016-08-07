@@ -15,11 +15,14 @@ import java.util.List;
 @Service
 public class ProducerServiceImpl implements ProducerService {
 
-    @Autowired
-    public ProducerRepository producerRepository;
+    private final ProducerRepository producerRepository;
+    private final EmployeeService employeeService;
 
     @Autowired
-    public EmployeeService employeeService;
+    public ProducerServiceImpl(ProducerRepository producerRepository, EmployeeService employeeService) {
+        this.producerRepository = producerRepository;
+        this.employeeService = employeeService;
+    }
 
     public void addProducer(Producer producer) {
         producerRepository.saveAndFlush(producer);
@@ -74,4 +77,5 @@ public class ProducerServiceImpl implements ProducerService {
             return producers;
         }
     }
+
 }

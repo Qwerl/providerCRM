@@ -25,13 +25,16 @@ import java.util.Map;
 @RequestMapping(value = "/")
 public class MainController {
 
-    @Autowired
-    public ProviderService providerService;
-    @Autowired
-    private ProducerService producerService;
+    private final ProviderService providerService;
+    private final ProducerService producerService;
+    private final DocumentService documentService;
 
     @Autowired
-    public DocumentService documentService;
+    public MainController(ProducerService producerService, DocumentService documentService, ProviderService providerService) {
+        this.producerService = producerService;
+        this.documentService = documentService;
+        this.providerService = providerService;
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Map<String, Object> model) {
@@ -74,7 +77,6 @@ public class MainController {
     public void downloadDocument(HttpServletResponse response,
                                  @PathVariable(value = "providerId") String providerId,
                                  @PathVariable(value = "documentId") String documentId) {
-
         Document document = documentService.getById(Long.parseLong(documentId));
         response.setHeader("Content-Disposition", "attachment; filename=" + document.getName() + "." + document.getExtension());
         try {

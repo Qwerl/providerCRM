@@ -1,6 +1,7 @@
 package ru.cg.providerCRM.web.response;
 
 public class ProducerResponse extends Response {
+
     private String id;
 
     public String getId() {
@@ -10,4 +11,5 @@ public class ProducerResponse extends Response {
     public void setId(String id) {
         this.id = id;
     }
+
 }

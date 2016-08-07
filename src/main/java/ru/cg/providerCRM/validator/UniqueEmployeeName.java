@@ -8,11 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {UniqueEmployeeNameValidator.class})
 public @interface UniqueEmployeeName {
-
     String message() default "name already exist";
-
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
-
 }

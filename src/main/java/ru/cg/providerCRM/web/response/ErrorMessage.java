@@ -1,5 +1,8 @@
 package ru.cg.providerCRM.web.response;
 
+import lombok.Data;
+
+@Data
 public class ErrorMessage {
 
 	private String fieldName;
@@ -8,12 +11,6 @@ public class ErrorMessage {
 	public ErrorMessage(String fieldName, String message) {
 		this.fieldName = fieldName;
 		this.message = message;
-	}
-	public String getFieldName() {
-		return fieldName;
-	}
-	public String getMessage() {
-		return message;
 	}
 	
 }

@@ -1,7 +1,9 @@
 package ru.cg.providerCRM.web.response;
 
+import lombok.Data;
 import ru.cg.providerCRM.entity.Product;
 
+@Data
 public class ProductResponse extends Response {
 
 	private String id;
@@ -16,22 +18,4 @@ public class ProductResponse extends Response {
 		note = product.getNote();
 	}
 
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getNote() {
-		return note;
-	}
-	public void setNote(String note) {
-		this.note = note;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
 }

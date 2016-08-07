@@ -28,14 +28,16 @@ import static ru.cg.providerCRM.services.FormToEntityConverter.EmployeeFormToEmp
 @RequestMapping(value = "/")
 public class ProducerEditorController {
 
-    @Autowired
-    private ProducerService producerService;
+    private final ProducerService producerService;
+    private final ProviderService providerService;
+    private final EmployeeService employeeService;
 
     @Autowired
-    private ProviderService providerService;
-
-    @Autowired
-    private EmployeeService employeeService;
+    public ProducerEditorController(EmployeeService employeeService, ProducerService producerService, ProviderService providerService) {
+        this.employeeService = employeeService;
+        this.producerService = producerService;
+        this.providerService = providerService;
+    }
 
     @RequestMapping(value = "/producer/add", method = RequestMethod.GET)
     public ModelAndView displayProducerRegisterForm() {

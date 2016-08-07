@@ -15,11 +15,13 @@
         <property name="prefix" value="/WEB-INF/views/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
+
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!-- setting maximum upload size -->
         <property name="maxUploadSize" value="1000000000000000000"/>
     </bean>
+
     <mvc:resources mapping="/resources/**" location="/resources/"/>
     <mvc:annotation-driven/>
 </beans>

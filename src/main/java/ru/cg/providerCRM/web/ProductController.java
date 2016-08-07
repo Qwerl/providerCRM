@@ -17,8 +17,12 @@ import java.util.List;
 @RequestMapping(value = "/")
 public class ProductController {
 
+    private final ProductService productService;
+
     @Autowired
-    public ProductService productService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @RequestMapping(value = "/product/{productId}", method = RequestMethod.POST)
     @ResponseBody

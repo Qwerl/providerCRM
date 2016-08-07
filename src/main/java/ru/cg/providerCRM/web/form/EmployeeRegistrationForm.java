@@ -1,11 +1,13 @@
 package ru.cg.providerCRM.web.form;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import ru.cg.providerCRM.entity.Employee;
 
 import javax.validation.constraints.Size;
 
+@Data
 public class EmployeeRegistrationForm {
 
     private Long id;
@@ -48,66 +50,6 @@ public class EmployeeRegistrationForm {
         employee.setHomePhoneNumber(homePhoneNumber);
         employee.setWorkPhoneNumber(workPhoneNumber);
         employee.setPosition(position);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getHomePhoneNumber() {
-        return homePhoneNumber;
-    }
-
-    public void setHomePhoneNumber(String homePhoneNumber) {
-        this.homePhoneNumber = homePhoneNumber;
-    }
-
-    public String getWorkPhoneNumber() {
-        return workPhoneNumber;
-    }
-
-    public void setWorkPhoneNumber(String workPhoneNumber) {
-        this.workPhoneNumber = workPhoneNumber;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    @Override
-    public String toString() {
-        return "EmployeeForm{" +
-                "id=" + id +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", homePhoneNumber='" + homePhoneNumber + '\'' +
-                ", workPhoneNumber='" + workPhoneNumber + '\'' +
-                ", position='" + position + '\'' +
-                '}';
     }
 
 }

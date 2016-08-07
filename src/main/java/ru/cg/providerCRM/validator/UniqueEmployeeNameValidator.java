@@ -10,8 +10,12 @@ import javax.validation.ConstraintValidatorContext;
 @Component
 public class UniqueEmployeeNameValidator implements ConstraintValidator<UniqueEmployeeName,String> {
 
+    private final EmployeeRepository employeeRepository;
+
     @Autowired
-    private EmployeeRepository employeeRepository;
+    public UniqueEmployeeNameValidator(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     @Override
     public void initialize(UniqueEmployeeName uniqueEmployeeName) {
@@ -19,10 +23,6 @@ public class UniqueEmployeeNameValidator implements ConstraintValidator<UniqueEm
 
     @Override
     public boolean isValid(String employeeName, ConstraintValidatorContext constraintValidatorContext) {
-        if (employeeRepository.findByFullName(employeeName) == null) {
-            return true;
-        } else {
-            return false;
-        }
+        return employeeRepository.findByFullName(employeeName) == null;
     }
 }

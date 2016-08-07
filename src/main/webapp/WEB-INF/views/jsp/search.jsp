@@ -6,67 +6,67 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>testTask</title>
-    <spring:url value="/resources/core/css/newStyles.css" var="coreCss"/>
-    <spring:url value="/resources/core/img/search.png" var="searchPng"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link type="text/css" href="${coreCss}" rel="stylesheet"/>
+  <title>testTask</title>
+  <spring:url value="/resources/core/css/newStyles.css" var="coreCss"/>
+  <spring:url value="/resources/core/img/search.png" var="searchPng"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <link type="text/css" href="${coreCss}" rel="stylesheet"/>
 </head>
 
 <body>
 <div class="container">
 
-    <div class="sidebar">
+  <div class="sidebar">
+    <div class="button-container">
+      <a href="/selectProvider">
+        <span>Поставщики</span>
+      </a>
+      <a href="/selectProducer">
+        <span>Производители</span>
+      </a>
+      <form class="search" action="/search" method="post">
+        <input name="tag" value="${currentTag}" required>
+        <button type="submit"><img src="${searchPng}" width="16"/></button>
+      </form>
+    </div>
+  </div>
+
+  <div class="infoTable">
+    <div class="infoBlock" id="block1">
+      <div class="header">
+        <p>Поставщики</p>
+      </div>
+      <div class="info">
         <div class="button-container">
-            <a href="/selectProvider">
-                <span>Поставщики</span>
+          <c:forEach items="${providers}" var="provider">
+            <a href="/selectProvider/<c:out value="${provider.id}"/>">
+              <span><c:out value="${provider.name}"/></span>
             </a>
-            <a href="/selectProducer">
-                <span>Производители</span>
-            </a>
-            <form class="search" action="/search" method="post">
-                <input name="tag" value="${currentTag}" required>
-                <button type="submit"><img src="${searchPng}" width="16"/></button>
-            </form>
+          </c:forEach>
         </div>
+      </div>
     </div>
 
-    <div class="infoTable">
-        <div class="infoBlock" id="block1">
-            <div class="header">
-                <p>Поставщики</p>
-            </div>
-            <div class="info">
-                <div class="button-container">
-                    <c:forEach items="${providers}" var="provider">
-                        <a href="/selectProvider/<c:out value="${provider.id}"/>">
-                            <span><c:out value="${provider.name}"/></span>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
+    <div class="infoBlock" id="block2">
+      <div class="header">
+        <p>Производители</p>
+      </div>
+      <div class="info">
+        <div class="button-container">
+          <c:forEach items="${producers}" var="producer">
+            <a href="/selectProducer/<c:out value="${producer.id}"/>">
+              <span><c:out value="${producer.name}"/></span>
+            </a>
+          </c:forEach>
         </div>
-
-        <div class="infoBlock" id="block2">
-            <div class="header">
-                <p>Производители</p>
-            </div>
-            <div class="info">
-                <div class="button-container">
-                    <c:forEach items="${producers}" var="producer">
-                        <a href="/selectProducer/<c:out value="${producer.id}"/>">
-                            <span><c:out value="${producer.name}"/></span>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
-        </div>
-
-        <div class="infoBlock" id="block3">
-            <div class="header"></div>
-            <div class="info"></div>
-        </div>
+      </div>
     </div>
+
+    <div class="infoBlock" id="block3">
+      <div class="header"></div>
+      <div class="info"></div>
+    </div>
+  </div>
 </div>
 </body>
 </html>

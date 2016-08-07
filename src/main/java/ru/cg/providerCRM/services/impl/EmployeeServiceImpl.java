@@ -11,8 +11,12 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
+    public final EmployeeRepository repository;
+
     @Autowired
-    public EmployeeRepository repository;
+    public EmployeeServiceImpl(EmployeeRepository repository) {
+        this.repository = repository;
+    }
 
     public Employee addEmployee(Employee employee) {
         return repository.saveAndFlush(employee);
@@ -37,4 +41,5 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> getAllEmployees() {
         return repository.findAll();
     }
+
 }

@@ -19,8 +19,12 @@ import java.util.List;
 @RequestMapping(value = "/")
 public class ProviderController {
 
+    private final ProviderService providerService;
+
     @Autowired
-    public ProviderService providerService;
+    public ProviderController(ProviderService providerService) {
+        this.providerService = providerService;
+    }
 
     @RequestMapping(value = "/provider/{providerId}", method = RequestMethod.POST)
     @ResponseBody
